@@ -1,0 +1,229 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1794939444916,
+  "projectRoot": "/home/D/RTSOLUTIONS",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": ">=20.0.0",
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "next",
+        "version": "16.4.6",
+        "category": "fullstack"
+      },
+      {
+        "name": "react",
+        "version": "19.3.1",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "19.3.1",
+        "category": "frontend"
+      },
+      {
+        "name": "@playwright/test",
+        "version": "1.65.1",
+        "category": "testing"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": "Node.js 20.0.0"
+  },
+  "build": {
+    "buildCommand": "npm run build",
+    "testCommand": "npm test",
+    "lintCommand": "npm run lint",
+    "devCommand": "npm run dev",
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start",
+      "lint": "next lint",
+      "typecheck": "tsc --noEmit",
+      "format": "prettier --write .",
+      "test": "playwright test",
+      "test:ui": "playwright test --ui",
+      "lighthouse": "lighthouse http://localhost:3000 --output=json --output-path=./lighthouse-report.json --chrome-flags=\"--headless\""
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": "*.spec.ts",
+    "fileOrganization": "type-based"
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "docs",
+      "public",
+      "src",
+      "tests"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 3,
+      "lastAccessed": 1794939444771,
+      "keyFiles": [
+        "ACCEPTANCE_CRITERIA.md",
+        "BUILD_BRIEF.md",
+        "CLAUDE_HANDOFF_PROMPT.md"
+      ]
+    },
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 3,
+      "lastAccessed": 1794939444786,
+      "keyFiles": [
+        "favicon.svg",
+        "robots.txt",
+        "site.webmanifest"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 0,
+      "lastAccessed": 1794939444832,
+      "keyFiles": []
+    },
+    "tests": {
+      "path": "tests",
+      "purpose": "Test files",
+      "fileCount": 1,
+      "lastAccessed": 1794939444844,
+      "keyFiles": [
+        "home.spec.ts"
+      ]
+    },
+    "src/app": {
+      "path": "src/app",
+      "purpose": "Application code",
+      "fileCount": 4,
+      "lastAccessed": 1794939444868,
+      "keyFiles": [
+        "layout.tsx",
+        "not-found.tsx",
+        "page.tsx"
+      ]
+    },
+    "src/components": {
+      "path": "src/components",
+      "purpose": "UI components",
+      "fileCount": 0,
+      "lastAccessed": 1794939444872,
+      "keyFiles": []
+    },
+    "src/lib": {
+      "path": "src/lib",
+      "purpose": "Library code",
+      "fileCount": 1,
+      "lastAccessed": 1794939444885,
+      "keyFiles": [
+        "config.ts"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "src/components/canvas/JellyfishCanvas.tsx",
+      "accessCount": 3.998089385350153,
+      "lastAccessed": 1794939936172,
+      "type": "file"
+    },
+    {
+      "path": "src/components/sections/Hero.tsx",
+      "accessCount": 2.754030794781305,
+      "lastAccessed": 1794956293526,
+      "type": "file"
+    },
+    {
+      "path": "src/components/sections/Process.tsx",
+      "accessCount": 1.9997145908546323,
+      "lastAccessed": 1794940077204,
+      "type": "file"
+    },
+    {
+      "path": "src/components/sections/WhyRTSolutions.tsx",
+      "accessCount": 1.9998902496968798,
+      "lastAccessed": 1794940127009,
+      "type": "file"
+    },
+    {
+      "path": "src/app/not-found.tsx",
+      "accessCount": 1.9999445417408845,
+      "lastAccessed": 1794940287425,
+      "type": "file"
+    },
+    {
+      "path": "package.json",
+      "accessCount": 1.999406909350581,
+      "lastAccessed": 1794942597590,
+      "type": "file"
+    },
+    {
+      "path": "tests/home.spec.ts",
+      "accessCount": 8.764365562286802,
+      "lastAccessed": 1794956307470,
+      "type": "file"
+    },
+    {
+      "path": "src/components/layout/Navigation.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1794947870960,
+      "type": "file"
+    },
+    {
+      "path": "playwright.config.ts",
+      "accessCount": 1.9993836500451754,
+      "lastAccessed": 1794952916802,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 1.99961689297849,
+      "lastAccessed": 1794958399192,
+      "type": "file"
+    },
+    {
+      "path": "docs/TECHNICAL_DECISIONS.md",
+      "accessCount": 1,
+      "lastAccessed": 1794958569183,
+      "type": "file"
+    },
+    {
+      "path": "docs/QA_REPORT.md",
+      "accessCount": 1,
+      "lastAccessed": 1794958639976,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

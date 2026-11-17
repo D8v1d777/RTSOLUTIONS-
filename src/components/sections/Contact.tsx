@@ -1,0 +1,410 @@
+'use client';
+
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Mail, MessageSquare, ExternalLink, Check, Loader2 } from 'lucide-react';
+import { config } from '@/lib/config';
+
+export function Contact() {
+  const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    projectType: '',
+    budget: '',
+    timeline: '',
+    message: '',
+  });
+  const [errors, setErrors] = useState<Partial<typeof formData>>({});
+
+  const validateForm = () => {
+    const newErrors: Partial<typeof formData> = {};
+    if (!formData.name.trim()) newErrors.name = 'Name is required';
+    if (!formData.email.trim()) newErrors.email = 'Email is required';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Valid email required';
+    if (!formData.projectType) newErrors.projectType = 'Select a project type';
+    if (!formData.message.trim()) newErrors.message = 'Message is required';
+    else if (formData.message.trim().length < 20) newErrors.message = 'Please share more details (min 20 chars)';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    setFormState('submitting');
+
+    // Simulate form submission - replace with actual endpoint
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    // In production, replace with actual form handler:
+    // const response = await fetch('/api/contact', { method: 'POST', body: JSON.stringify(formData) });
+    // if (response.ok) setFormState('success'); else setFormState('error');
+
+    setFormState('success');
+    setFormData({ name: '', email: '', projectType: '', budget: '', timeline: '', message: '' });
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name as keyof typeof errors]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  return (
+    <section
+      id="contact"
+      className="relative py-24 lg:py-32 overflow-hidden"
+      aria-labelledby="contact-heading"
+    >
+      {/* Background */}
+      <div className="absolute inset-0 -z-10" aria-hidden="true">
+        <div
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-crimson/5 rounded-full blur-[300px] opacity-30"
+        />
+        <div className="absolute inset-0 bg-grid opacity-30" />
+      </div>
+
+      <div className="container relative">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 max-w-5xl mx-auto">
+          {/* Info Column */}
+          <motion.div
+            className="lg:pl-8"
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.8, ease: [0.19, 1, 0.22, 1] }}
+          >
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 glass-panel text-xs font-medium text-crimson-glow uppercase tracking-wider mb-6">
+              Get in touch
+            </span>
+            <h2
+              id="contact-heading"
+              className="font-display text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight text-white leading-[1.1] mb-6"
+            >
+              Let\'s talk about
+              <br />
+              <span className="text-crimson-glow">your project.</span>
+            </h2>
+            <p className="text-lg text-text-secondary leading-relaxed mb-10 max-w-xl">
+              No sales scripts. No middlemen. You\'ll talk directly with the people who\'d be doing the work.
+              Share what you\'re building and we\'ll reply within 1–2 business days.
+            </p>
+
+            {/* Contact Methods */}
+            <div className="space-y-6">
+              <a
+                href={`mailto:${config.email}`}
+                className="group flex items-center gap-4 p-5 glass-panel-strong rounded-xl hover:border-crimson-dim/50 transition-all duration-300"
+              >
+                <div className="w-12 h-12 glass-panel-crimson rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                  <Mail className="w-6 h-6 text-crimson-glow" aria-hidden="true" />
+                </div>
+                <div>
+                  <p className="font-mono text-xs text-text-dim uppercase tracking-wider">Email</p>
+                  <p className="text-text-secondary group-hover:text-white transition-colors">
+                    {config.email}
+                  </p>
+                </div>
+              </a>
+
+              <div className="flex items-center gap-4 p-5 glass-panel-strong rounded-xl">
+                <div className="w-12 h-12 glass-panel rounded-xl flex items-center justify-center flex-shrink-0 text-text-dim">
+                  <MessageSquare className="w-6 h-6" aria-hidden="true" />
+                </div>
+                <div>
+                  <p className="font-mono text-xs text-text-dim uppercase tracking-wider">Response Time</p>
+                  <p className="text-text-secondary">1–2 business days</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 p-5 glass-panel-strong rounded-xl">
+                <div className="w-12 h-12 glass-panel rounded-xl flex items-center justify-center flex-shrink-0 text-text-dim">
+                  <ExternalLink className="w-6 h-6" aria-hidden="true" />
+                </div>
+                <div>
+                  <p className="font-mono text-xs text-text-dim uppercase tracking-wider">Work Hours</p>
+                  <p className="text-text-secondary">Mon–Fri, 9am–6pm CET</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Placeholder notice */}
+            {config.isPlaceholder && (
+              <motion.div
+                className="mt-10 p-4 glass-panel-crimson rounded-xl border-crimson-dim/30"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <p className="font-mono text-xs text-crimson-glow flex items-center gap-2">
+                  <ExternalLink className="w-3 h-3" aria-hidden="true" />
+                  Placeholder contact details — replace with verified info in config
+                </p>
+              </motion.div>
+            )}
+          </motion.div>
+
+          {/* Form Column */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.8, ease: [0.19, 1, 0.22, 1], delay: 0.1 }}
+          >
+            <AnimatePresence mode="wait">
+              {formState === 'success' ? (
+                <motion.div
+                  key="success"
+                  className="glass-panel-strong rounded-2xl p-8 lg:p-10 text-center"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                >
+                  <div className="w-16 h-16 bg-crimson/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Check className="w-8 h-8 text-crimson-glow" aria-hidden="true" />
+                  </div>
+                  <h3 className="font-display text-2xl font-medium text-white mb-3">
+                    Message sent
+                  </h3>
+                  <p className="text-text-secondary mb-6 max-w-sm mx-auto">
+                    Thanks for reaching out. We\'ll review your project details and get back within 1–2 business days.
+                  </p>
+                  <button
+                    onClick={() => setFormState('idle')}
+                    className="px-6 py-3 text-sm font-medium text-white bg-crimson hover:bg-crimson-glow border border-crimson-dim rounded-md transition-all duration-200"
+                  >
+                    Send another message
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.form
+                  key="form"
+                  onSubmit={handleSubmit}
+                  className="glass-panel-strong rounded-2xl p-8 lg:p-10 space-y-6"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                >
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    {/* Name */}
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block font-mono text-xs text-text-dim uppercase tracking-wider mb-2"
+                      >
+                        Name <span className="text-crimson-glow" aria-hidden="true">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-3 glass-panel rounded-lg border transition-all duration-200 ${
+                          errors.name ? 'border-crimson/50 focus:border-crimson' : 'border-white/10 focus:border-crimson-glow/50'
+                        } text-white placeholder-text-dim focus:outline-none focus:ring-2 focus:ring-crimson-glow/20`}
+                        placeholder="Your name"
+                        aria-invalid={errors.name ? 'true' : 'false'}
+                        aria-describedby={errors.name ? 'name-error' : undefined}
+                        disabled={formState === 'submitting'}
+                      />
+                      {errors.name && (
+                        <p id="name-error" className="mt-1.5 text-sm text-crimson-glow" role="alert">
+                          {errors.name}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Email */}
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block font-mono text-xs text-text-dim uppercase tracking-wider mb-2"
+                      >
+                        Email <span className="text-crimson-glow" aria-hidden="true">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-3 glass-panel rounded-lg border transition-all duration-200 ${
+                          errors.email ? 'border-crimson/50 focus:border-crimson' : 'border-white/10 focus:border-crimson-glow/50'
+                        } text-white placeholder-text-dim focus:outline-none focus:ring-2 focus:ring-crimson-glow/20`}
+                        placeholder="you@company.com"
+                        aria-invalid={errors.email ? 'true' : 'false'}
+                        aria-describedby={errors.email ? 'email-error' : undefined}
+                        disabled={formState === 'submitting'}
+                      />
+                      {errors.email && (
+                        <p id="email-error" className="mt-1.5 text-sm text-crimson-glow" role="alert">
+                          {errors.email}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    {/* Project Type */}
+                    <div>
+                      <label
+                        htmlFor="projectType"
+                        className="block font-mono text-xs text-text-dim uppercase tracking-wider mb-2"
+                      >
+                        Project Type <span className="text-crimson-glow" aria-hidden="true">*</span>
+                      </label>
+                      <select
+                        id="projectType"
+                        name="projectType"
+                        value={formData.projectType}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-3 glass-panel rounded-lg border transition-all duration-200 appearance-none ${
+                          errors.projectType ? 'border-crimson/50 focus:border-crimson' : 'border-white/10 focus:border-crimson-glow/50'
+                        } text-white focus:outline-none focus:ring-2 focus:ring-crimson-glow/20`}
+                        aria-invalid={errors.projectType ? 'true' : 'false'}
+                        aria-describedby={errors.projectType ? 'projectType-error' : undefined}
+                        disabled={formState === 'submitting'}
+                      >
+                        <option value="" disabled>
+                          Select project type
+                        </option>
+                        <option value="website">Custom Website</option>
+                        <option value="webapp">Web Application</option>
+                        <option value="desktop">Desktop Application</option>
+                        <option value="multiple">Multiple / Not Sure</option>
+                      </select>
+                      {errors.projectType && (
+                        <p id="projectType-error" className="mt-1.5 text-sm text-crimson-glow" role="alert">
+                          {errors.projectType}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Budget */}
+                    <div>
+                      <label
+                        htmlFor="budget"
+                        className="block font-mono text-xs text-text-dim uppercase tracking-wider mb-2"
+                      >
+                        Budget Range
+                      </label>
+                      <select
+                        id="budget"
+                        name="budget"
+                        value={formData.budget}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 glass-panel rounded-lg border border-white/10 focus:border-crimson-glow/50 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-crimson-glow/20"
+                        disabled={formState === 'submitting'}
+                      >
+                        <option value="">Select budget range</option>
+                        <option value="10-25">$10k – $25k</option>
+                        <option value="25-50">$25k – $50k</option>
+                        <option value="50-100">$50k – $100k</option>
+                        <option value="100+">$100k+</option>
+                        <option value="unknown">Prefer to discuss</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    {/* Timeline */}
+                    <div>
+                      <label
+                        htmlFor="timeline"
+                        className="block font-mono text-xs text-text-dim uppercase tracking-wider mb-2"
+                      >
+                        Timeline
+                      </label>
+                      <select
+                        id="timeline"
+                        name="timeline"
+                        value={formData.timeline}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 glass-panel rounded-lg border border-white/10 focus:border-crimson-glow/50 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-crimson-glow/20"
+                        disabled={formState === 'submitting'}
+                      >
+                        <option value="">Select timeline</option>
+                        <option value="asap">ASAP</option>
+                        <option value="1-3">1–3 months</option>
+                        <option value="3-6">3–6 months</option>
+                        <option value="6+">6+ months</option>
+                        <option value="flexible">Flexible</option>
+                      </select>
+                    </div>
+
+                    {/* Empty spacer for alignment */}
+                    <div />
+                  </div>
+
+                  {/* Message */}
+                  <div>
+                    <label
+                      htmlFor="message"
+                      className="block font-mono text-xs text-text-dim uppercase tracking-wider mb-2"
+                    >
+                      Project Details <span className="text-crimson-glow" aria-hidden="true">*</span>
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      rows={6}
+                      className={`w-full px-4 py-3 glass-panel rounded-lg border transition-all duration-200 resize-y min-h-[140px] ${
+                        errors.message ? 'border-crimson/50 focus:border-crimson' : 'border-white/10 focus:border-crimson-glow/50'
+                      } text-white placeholder-text-dim focus:outline-none focus:ring-2 focus:ring-crimson-glow/20`}
+                      placeholder="Tell us about your project: goals, constraints, tech preferences, timeline drivers, anything that helps us understand the shape of the work."
+                      aria-invalid={errors.message ? 'true' : 'false'}
+                      aria-describedby={errors.message ? 'message-error' : 'message-hint'}
+                      disabled={formState === 'submitting'}
+                    />
+                    <p id="message-hint" className="mt-1.5 text-sm text-text-dim">
+                      Minimum 20 characters. Be specific—it helps us prepare for our first conversation.
+                    </p>
+                    {errors.message && (
+                      <p id="message-error" className="mt-1.5 text-sm text-crimson-glow" role="alert">
+                        {errors.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={formState === 'submitting'}
+                    className="w-full sm:w-auto px-8 py-4 text-base font-medium text-white bg-crimson hover:bg-crimson-glow border border-crimson-dim rounded-md transition-all duration-300 hover:shadow-crimson disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center"
+                  >
+                    {formState === 'submitting' ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        Send Message
+                        <ExternalLink className="w-5 h-5" aria-hidden="true" />
+                      </>
+                    )}
+                  </button>
+
+                  <p className="text-xs text-text-dim text-center sm:text-left">
+                    By submitting, you agree we may store this information to respond to your inquiry. No marketing lists. No third parties.
+                    <br />
+                    <a href="#" className="text-crimson-glow hover:text-scarlet underline underline-offset-2">
+                      Privacy notice
+                    </a>
+                  </p>
+                </motion.form>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
