@@ -19,4 +19,4 @@ The form does not submit to a backend. When a verified recipient is configured, 
 
 ## Release status
 
-This is an isolated staging preview, not a production launch. The current Render build validates dependency installation, lint, TypeScript and Next.js production build. Playwright must be executed against the same commit before merge; historical test reports are not evidence for later commits.
+This is an isolated staging service, not a production launch. The initial Render build is still in progress and has not yet produced a live preview. Once the initial run settles, deploy the latest branch HEAD manually. The Render build command validates dependency installation, lint, TypeScript and the Next.js production build. Playwright must pass against the same deployed commit before merge; historical test reports are not evidence for later commits.
