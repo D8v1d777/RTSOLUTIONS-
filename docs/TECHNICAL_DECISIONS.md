@@ -227,25 +227,20 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jet
 
 ## 6. Contact Form
 
-### Current state: Client-side validation only; delivery is not implemented
+### Current state: Client-side validation with conditional mailto draft; no backend delivery
 **Date:** 2026-11-18  
-**Status:** Launch blocker — see GitHub issue #3
+**Status:** Preview-safe; owner contact configuration remains outstanding
 
-**Verified behavior:**
-- The current handler waits 1.5 seconds, switches to a success screen, and clears the form.
-- It does not call an API route, submit to a service, or open a `mailto:` draft.
-- The separate email link uses a placeholder address while `config.isPlaceholder` is true.
-- The honeypot check runs only in client-side code; it is not server-side spam protection.
-- The privacy copy implies data storage and links to a placeholder `#` URL; neither a storage mechanism nor a policy is configured.
+**Verified implementation:**
+- The form validates name, email format, project type and a 50-character minimum message.
+- When `config.isPlaceholder` is true or no verified recipient is configured, no email address or mailto link is exposed; the visitor is told no message is sent.
+- When a verified recipient is configured and placeholder mode is disabled, the form prepares a URL-encoded mailto draft. The visitor must send it manually.
+- Form data is retained; there is no fake delivery confirmation and no backend/API submission.
+- Social links are also suppressed in placeholder mode.
+- Response-time and business-hours claims are not rendered while unverified.
+- The honeypot is client-side filtering only, not server-side spam protection.
 
-**Required before launch:**
-- Use a verified contact recipient with an honest `mailto:` draft fallback, or an owner-approved backend/email provider.
-- Never show “Message sent” without delivery confirmation; a mailto flow should say the user must send the prepared draft.
-- Remove or replace the false storage/privacy claims.
-- Verify response-time, business-hours/timezone and budget-range content with the owner, or remove it.
-- Keep the honeypot described as client-side only unless a server endpoint is added.
-
-**Existing fields:** Name, email, project type, budget, timeline, message (minimum 50 characters), and a hidden website honeypot.
+**Owner actions before public launch:** Supply a verified contact email and genuine social profile URLs, review the privacy notice decision, and only then disable placeholder mode. If server-side delivery is required, add an owner-approved backend/provider separately.
 
 ---
 
