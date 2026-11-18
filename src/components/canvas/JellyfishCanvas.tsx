@@ -1,477 +1,393 @@
 'use client';
 
-import { useRef, useEffect, useState, useMemo } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import {
-  OrbitControls,
-  ContactShadows,
-  Environment,
-} from '@react-three/drei';
-import {
-  Color,
-  MeshPhysicalMaterial,
-  DoubleSide,
   AdditiveBlending,
-  Vector2,
-  LatheGeometry,
-  SphereGeometry,
-  CapsuleGeometry,
-  BufferGeometry,
   BufferAttribute,
-  PointsMaterial,
-  Points,
+  BufferGeometry,
+  CapsuleGeometry,
+  DoubleSide,
   Group,
-  Mesh,
-  Clock,
+  InstancedMesh,
+  MeshBasicMaterial,
+  MeshPhysicalMaterial,
   Object3D,
-  Material,
-  BackSide,
+  Points,
+  PointsMaterial,
+  SphereGeometry,
+  TorusGeometry,
+  Vector3,
 } from 'three';
 
-// Check for reduced motion preference
-const useReducedMotion = () => {
+const TAU = Math.PI * 2;
+const LONG_TENTACLES = 16;
+const ORAL_ARMS = 8;
+const STRAND_COUNT = LONG_TENTACLES + ORAL_ARMS;
+const SEGMENT_COUNT = 15;
+const INSTANCE_COUNT = STRAND_COUNT * (SEGMENT_COUNT - 1);
+
+function useReducedMotion() {
   const [reduced, setReduced] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    }
-    return false;
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   });
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const handler = (e: MediaQueryListEvent) => setReduced(e.matches);
-    mediaQuery.addEventListener('change', handler);
-    return () => mediaQuery.removeEventListener('change', handler);
+
+  useMemo(() => {
+    if (typeof window === 'undefined') return undefined;
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = (event: MediaQueryListEvent) => setReduced(event.matches);
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
   }, []);
+
   return reduced;
-};
-
-// Check for WebGL support
-const useWebGLSupport = () => {
-  const [supported] = useState(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const canvas = document.createElement('canvas');
-        return !!(canvas.getContext('webgl') || canvas.getContext('experimental-webgl'));
-      } catch {
-        return false;
-      }
-    }
-    return true;
-  });
-  return supported;
-};
-
-// Jellyfish Bell Component
-function JellyfishBell({
-  reducedMotion,
-  intensity = 1,
-}: {
-  reducedMotion: boolean;
-  intensity?: number;
-}) {
-  const bellRef = useRef<Mesh>(null);
-  const clock = useRef(new Clock()).current;
-
-  // Create geometry once using useMemo
-  const bellGeometry = useMemo(() => {
-    const points: Vector2[] = [];
-    const segments = 32;
-    for (let i = 0; i <= segments; i++) {
-      const v = i / segments;
-      const radius = Math.sin(v * Math.PI * 0.5) * (1 - v * 0.3) + 0.15;
-      const y = Math.cos(v * Math.PI * 0.5) * 1.2;
-      points.push(new Vector2(radius, y));
-    }
-    const geometry = new LatheGeometry(points, 64);
-    geometry.computeVertexNormals();
-    return geometry;
-  }, []);
-
-  // Create material once using useMemo
-  const bellMaterial = useMemo(() => new MeshPhysicalMaterial({
-    color: new Color(0x1a0508),
-    transparent: true,
-    opacity: 0.15,
-    transmission: 0.95,
-    thickness: 0.5,
-    roughness: 0.05,
-    metalness: 0.0,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.05,
-    ior: 1.33,
-    envMapIntensity: 1.5,
-    side: DoubleSide,
-    depthWrite: false,
-  }), []);
-
-  useFrame(() => {
-    if (!bellRef.current || reducedMotion) return;
-    const t = clock.getElapsedTime() * 0.3 * intensity;
-
-    // Pulsing animation - subtle breathing
-    const pulse = 1 + Math.sin(t) * 0.03 * intensity;
-    bellRef.current.scale.setScalar(pulse);
-
-    // Gentle rotation drift
-    bellRef.current.rotation.y = Math.sin(t * 0.3) * 0.15 * intensity;
-    bellRef.current.rotation.x = Math.cos(t * 0.2) * 0.05 * intensity;
-  });
-
-  return <mesh ref={bellRef} geometry={bellGeometry} material={bellMaterial} />;
 }
 
-// Inner Glow Component
-function InnerGlow({
-  reducedMotion,
-  intensity = 1,
-}: {
-  reducedMotion: boolean;
-  intensity?: number;
-}) {
-  const glowRef = useRef<Mesh>(null);
-  const clock = useRef(new Clock()).current;
-
-  const glowGeometry = useMemo(() => new SphereGeometry(0.85, 48, 32), []);
-  const glowMaterial = useMemo(() => new MeshPhysicalMaterial({
-    color: new Color(0xff2a3a),
-    transparent: true,
-    opacity: 0.12,
-    blending: AdditiveBlending,
-    depthWrite: false,
-    side: BackSide,
-  }), []);
-
-  useFrame(() => {
-    if (!glowRef.current || reducedMotion) return;
-    const t = clock.getElapsedTime() * 0.5 * intensity;
-
-    const pulse = 1 + Math.sin(t * 0.7) * 0.15 * intensity;
-    if (glowRef.current.material instanceof Material) {
-      (glowRef.current.material as MeshPhysicalMaterial).opacity = 0.12 * pulse * intensity;
-    }
-
-    const scale = 0.92 + Math.sin(t * 0.4) * 0.02 * intensity;
-    glowRef.current.scale.setScalar(scale);
-  });
-
-  return <mesh ref={glowRef} geometry={glowGeometry} material={glowMaterial} />;
-}
-
-// Tentacle Component
-function Tentacle({
-  index,
-  count,
-  reducedMotion,
-  intensity = 1,
-}: {
-  index: number;
-  count: number;
-  reducedMotion: boolean;
-  intensity?: number;
-}) {
-  const tentacleRef = useRef<Group>(null);
-  const clock = useRef(new Clock()).current;
-  const phaseOffset = (index / count) * Math.PI * 2;
-  const baseAngle = (index / count) * Math.PI * 2;
-
-  const segmentGeometry = useMemo(() => new CapsuleGeometry(0.025, 0.15, 4, 8), []);
-  const segmentMaterial = useMemo(() => new MeshPhysicalMaterial({
-    color: new Color(0x8b151d),
-    transparent: true,
-    opacity: 0.6,
-    transmission: 0.7,
-    thickness: 0.1,
-    roughness: 0.2,
-    metalness: 0.0,
-    clearcoat: 0.8,
-    clearcoatRoughness: 0.1,
-    envMapIntensity: 1.0,
-    depthWrite: false,
-  }), []);
-
-  const segments = 18;
-
-  useFrame(() => {
-    if (!tentacleRef.current || reducedMotion) return;
-    const t = clock.getElapsedTime() * 0.8 * intensity + phaseOffset;
-
-    const children = tentacleRef.current.children as Object3D[];
-    children.forEach((segment, i) => {
-      const segmentIndex = i / (children.length - 1);
-      const waveX = Math.sin(t + segmentIndex * 2.5) * 0.15 * (segmentIndex + 0.3) * intensity;
-      const waveZ = Math.cos(t * 0.7 + segmentIndex * 2) * 0.1 * (segmentIndex + 0.3) * intensity;
-      const waveY = Math.sin(t * 0.5 + segmentIndex * 1.5) * 0.03 * intensity;
-
-      segment.position.x = waveX;
-      segment.position.z = waveZ;
-      segment.position.y = -segmentIndex * 1.8 + waveY;
-
-      if (i < children.length - 1) {
-        const nextSegment = children[i + 1];
-        const dx = nextSegment.position.x - segment.position.x;
-        const dz = nextSegment.position.z - segment.position.z;
-        const dy = nextSegment.position.y - segment.position.y;
-        segment.lookAt(
-          segment.position.x + dx,
-          segment.position.y + dy,
-          segment.position.z + dz
-        );
-      }
-    });
-
-    tentacleRef.current.rotation.y = baseAngle;
-    tentacleRef.current.rotation.z = Math.sin(t * 0.3) * 0.1 * intensity;
-  });
-
-  // Create segment nodes once using useMemo
-  const segmentNodes = useMemo(() => {
-    const nodes = [];
-    for (let i = 0; i < segments; i++) {
-      nodes.push(
-        <mesh
-          key={i}
-          geometry={segmentGeometry}
-          material={segmentMaterial}
-          position={[0, -i * 0.18, 0]}
-          scale={1 - i * 0.035}
-        />
-      );
-    }
-    return nodes;
-  }, [segmentGeometry, segmentMaterial, segments]);
-
-  return <group ref={tentacleRef}>{segmentNodes}</group>;
-}
-
-// Pre-generate random values at module level to avoid Math.random during render
-const PARTICLE_COUNT = 300;
-const particleRandomValues = new Array(PARTICLE_COUNT * 6).fill(0).map(() => Math.random());
-// Indices: 0=radius, 1=theta, 2=phi, 3=size/alpha, 4=resetX, 5=resetZ
-
-// Particle System
-function Particles({
-  reducedMotion,
-  intensity = 1,
-}: {
-  reducedMotion: boolean;
-  intensity?: number;
-}) {
-  const particlesRef = useRef<Points>(null);
-  const clock = useRef(new Clock()).current;
-
-  // Create geometry once with pre-generated random data
-  const geometry = useMemo(() => {
-    const positions = new Float32Array(PARTICLE_COUNT * 3);
-    const sizes = new Float32Array(PARTICLE_COUNT);
-    const alphas = new Float32Array(PARTICLE_COUNT);
-    const colors = new Float32Array(PARTICLE_COUNT * 3);
-
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      const radius = particleRandomValues[i * 4] * 1.2;
-      const theta = particleRandomValues[i * 4 + 1] * Math.PI * 2;
-      const phi = Math.acos(2 * particleRandomValues[i * 4 + 2] - 1);
-
-      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = radius * Math.cos(phi) * 2 - 1.5;
-      positions[i * 3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
-
-      sizes[i] = 0.02 + particleRandomValues[i * 4 + 3] * 0.02;
-      alphas[i] = 0.2 + particleRandomValues[(i * 4 + 3) % (PARTICLE_COUNT * 4)] * 0.4;
-
-      const colorMix = particleRandomValues[(i * 4 + 3) % (PARTICLE_COUNT * 4)];
-      colors[i * 3] = 0.8 + colorMix * 0.2;
-      colors[i * 3 + 1] = 0.05 + colorMix * 0.1;
-      colors[i * 3 + 2] = 0.08 + colorMix * 0.1;
-    }
-
-    const geo = new BufferGeometry();
-    geo.setAttribute('position', new BufferAttribute(positions, 3));
-    geo.setAttribute('size', new BufferAttribute(sizes, 1));
-    geo.setAttribute('alpha', new BufferAttribute(alphas, 1));
-    geo.setAttribute('color', new BufferAttribute(colors, 3));
-    return geo;
-  }, []);
-
-  const material = useMemo(() => new PointsMaterial({
-    size: 0.03,
-    vertexColors: true,
-    transparent: true,
-    opacity: 0.6,
-    blending: AdditiveBlending,
-    depthWrite: false,
-    sizeAttenuation: true,
-  }), []);
-
-  useFrame(() => {
-    if (!particlesRef.current || reducedMotion) return;
-    const geometry = particlesRef.current.geometry as BufferGeometry;
-    const positions = geometry.attributes.position.array as Float32Array;
-    const sizes = geometry.attributes.size.array as Float32Array;
-    const alphas = geometry.attributes.alpha?.array as Float32Array | undefined;
-    const time = clock.getElapsedTime();
-
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      const i3 = i * 3;
-      const phase = (i / PARTICLE_COUNT) * Math.PI * 8;
-
-      positions[i3 + 1] += 0.002 * intensity;
-      positions[i3] += Math.sin(time * 0.5 + phase) * 0.001 * intensity;
-      positions[i3 + 2] += Math.cos(time * 0.3 + phase) * 0.001 * intensity;
-
-      if (positions[i3 + 1] > 3) {
-        positions[i3 + 1] = -1.5;
-        // Use pre-generated random values to avoid Math.random in animation loop
-        const resetIdx = i * 6;
-        positions[i3] = (particleRandomValues[resetIdx + 4] - 0.5) * 1.5;
-        positions[i3 + 2] = (particleRandomValues[resetIdx + 5] - 0.5) * 1.5;
-      }
-
-      sizes[i] = 0.02 + Math.sin(time * 2 + phase) * 0.01 * intensity;
-      if (alphas) {
-        alphas[i] = 0.3 + Math.sin(time * 1.5 + phase) * 0.2 * intensity;
-      }
-    }
-
-    geometry.attributes.position.needsUpdate = true;
-    geometry.attributes.size.needsUpdate = true;
-    if (alphas) geometry.attributes.alpha.needsUpdate = true;
-  });
-
-  return <points ref={particlesRef} geometry={geometry} material={material} />;
-}
-
-// Main Jellyfish Scene
-function JellyfishScene() {
-  const reducedMotion = useReducedMotion();
-  const webglSupported = useWebGLSupport();
-  // Clock is used by child components via their own useRef(new Clock()).current
-
-  const [intensity, setIntensity] = useState(1);
-  useEffect(() => {
-    const updateIntensity = () => {
-      const width = window.innerWidth;
-      const isMobile = width < 768;
-      const isLowPower = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
-      setIntensity(isMobile || isLowPower ? 0.6 : 1);
-    };
-    updateIntensity();
-    window.addEventListener('resize', updateIntensity);
-    return () => window.removeEventListener('resize', updateIntensity);
-  }, []);
-
-  if (!webglSupported) {
-    return null;
+function supportsWebGL() {
+  if (typeof window === 'undefined') return false;
+  try {
+    const canvas = document.createElement('canvas');
+    return Boolean(
+      canvas.getContext('webgl2') ||
+      canvas.getContext('webgl') ||
+      canvas.getContext('experimental-webgl'),
+    );
+  } catch {
+    return false;
   }
+}
+
+function JellyfishBell({ reducedMotion }: { reducedMotion: boolean }) {
+  const bellRef = useRef<Group>(null);
+
+  const domeGeometry = useMemo(
+    () => new SphereGeometry(1, 72, 48, 0, TAU, 0, Math.PI / 2),
+    [],
+  );
+  const innerDomeGeometry = useMemo(
+    () => new SphereGeometry(1, 56, 36, 0, TAU, 0, Math.PI / 2),
+    [],
+  );
+  const glowGeometry = useMemo(() => new SphereGeometry(0.72, 48, 32), []);
+
+  const shellMaterial = useMemo(
+    () =>
+      new MeshPhysicalMaterial({
+        color: '#ffd0d6',
+        emissive: '#8e1429',
+        emissiveIntensity: 0.42,
+        roughness: 0.17,
+        metalness: 0.02,
+        transmission: 0.16,
+        thickness: 0.65,
+        ior: 1.34,
+        clearcoat: 1,
+        clearcoatRoughness: 0.08,
+        side: DoubleSide,
+      }),
+    [],
+  );
+  const innerMaterial = useMemo(
+    () =>
+      new MeshBasicMaterial({
+        color: '#ff536e',
+        transparent: true,
+        opacity: 0.3,
+        blending: AdditiveBlending,
+        depthWrite: false,
+        side: DoubleSide,
+        toneMapped: false,
+      }),
+    [],
+  );
+  const glowMaterial = useMemo(
+    () =>
+      new MeshBasicMaterial({
+        color: '#ff244f',
+        transparent: true,
+        opacity: 0.3,
+        blending: AdditiveBlending,
+        depthWrite: false,
+        toneMapped: false,
+      }),
+    [],
+  );
+  const rimGeometry = useMemo(() => new TorusGeometry(1.02, 0.018, 12, 112), []);
+
+  useFrame(({ clock }) => {
+    if (!bellRef.current || reducedMotion) return;
+    const time = clock.elapsedTime * 0.34;
+    const pulse = 1 + Math.sin(time * 1.4) * 0.018;
+    bellRef.current.scale.set(1, pulse, 1);
+    bellRef.current.rotation.y = Math.sin(time * 0.55) * 0.045;
+    bellRef.current.rotation.z = Math.sin(time * 0.42) * 0.018;
+  });
 
   return (
-    <group>
-      <InnerGlow
-        reducedMotion={reducedMotion}
-        intensity={intensity}
+    <group ref={bellRef} position={[0, 0.43, 0]}>
+      <mesh
+        geometry={domeGeometry}
+        material={shellMaterial}
+        scale={[1.17, 0.92, 1.17]}
       />
-
-      <JellyfishBell
-        reducedMotion={reducedMotion}
-        intensity={intensity}
+      <mesh
+        geometry={innerDomeGeometry}
+        material={innerMaterial}
+        scale={[1.04, 0.77, 1.04]}
+        position={[0, -0.015, 0]}
       />
-
-      <group>
-        {Array.from({ length: 12 }, (_, i) => (
-          <Tentacle
-            key={i}
-            index={i}
-            count={12}
-            reducedMotion={reducedMotion}
-            intensity={intensity}
+      <mesh
+        geometry={glowGeometry}
+        material={glowMaterial}
+        scale={[0.88, 0.2, 0.88]}
+        position={[0, -0.12, 0]}
+      />
+      <mesh
+        geometry={rimGeometry}
+        rotation={[Math.PI / 2, 0, 0]}
+        material={
+          <meshBasicMaterial
+            color="#ff9ba9"
+            toneMapped={false}
+            transparent
+            opacity={0.92}
+            blending={AdditiveBlending}
+            depthWrite={false}
           />
-        ))}
-      </group>
-
-      <group>
-        {Array.from({ length: 8 }, (_, i) => (
-          <Tentacle
-            key={`oral-${i}`}
-            index={i}
-            count={8}
-            reducedMotion={reducedMotion}
-            intensity={intensity * 0.5}
-          />
-        ))}
-      </group>
-
-      <Particles
-        reducedMotion={reducedMotion}
-        intensity={intensity}
+        }
       />
-
-      <ContactShadows
-        opacity={0.15}
-        scale={3}
-        blur={2}
-        far={5}
-        color="#c01c28"
-        position={[0, -1.6, 0]}
-      />
+      <pointLight position={[0, -0.12, 0.15]} color="#ff254e" intensity={1.35} distance={3.5} />
     </group>
+  );
+}
+
+function TentacleField({ reducedMotion }: { reducedMotion: boolean }) {
+  const meshRef = useRef<InstancedMesh>(null);
+  const geometry = useMemo(() => new CapsuleGeometry(0.013, 0.12, 4, 7), []);
+  const material = useMemo(
+    () =>
+      new MeshPhysicalMaterial({
+        color: '#ffa0ad',
+        emissive: '#8d1029',
+        emissiveIntensity: 0.55,
+        roughness: 0.28,
+        metalness: 0.015,
+        transparent: true,
+        opacity: 0.86,
+        depthWrite: false,
+        clearcoat: 0.55,
+        clearcoatRoughness: 0.2,
+      }),
+    [],
+  );
+  const helpers = useMemo(
+    () => ({
+      from: new Vector3(),
+      to: new Vector3(),
+      direction: new Vector3(),
+      up: new Vector3(0, 1, 0),
+      object: new Object3D(),
+    }),
+    [],
+  );
+
+  useFrame(({ clock }) => {
+    const mesh = meshRef.current;
+    if (!mesh) return;
+
+    const time = reducedMotion ? 0 : clock.elapsedTime * 0.78;
+    let instance = 0;
+
+    for (let strand = 0; strand < STRAND_COUNT; strand++) {
+      const isOralArm = strand >= LONG_TENTACLES;
+      const strandIndex = isOralArm ? strand - LONG_TENTACLES : strand;
+      const strandTotal = isOralArm ? ORAL_ARMS : LONG_TENTACLES;
+      const angle = (strandIndex / strandTotal) * TAU + (isOralArm ? 0.12 : 0);
+      const phase = strand * 1.71;
+      const length = isOralArm ? 1.1 : 1.82;
+      const rootRadius = isOralArm ? 0.22 : 0.52;
+
+      for (let segment = 0; segment < SEGMENT_COUNT - 1; segment++) {
+        const u = segment / (SEGMENT_COUNT - 1);
+        const nextU = (segment + 1) / (SEGMENT_COUNT - 1);
+
+        const pointAt = (target: Vector3, progress: number) => {
+          const wave = reducedMotion
+            ? 0
+            : Math.sin(time + phase + progress * 3.3) * progress * (isOralArm ? 0.105 : 0.22);
+          const curl = reducedMotion
+            ? 0
+            : Math.cos(time * 0.72 + phase + progress * 2.4) * progress * (isOralArm ? 0.055 : 0.12);
+          const radius = rootRadius + progress * 0.075;
+          target.set(
+            Math.cos(angle) * radius - Math.sin(angle) * wave + Math.cos(angle) * curl * 0.15,
+            0.25 - progress * length + (reducedMotion ? 0 : Math.sin(time * 0.65 + phase + progress * 2) * progress * 0.035),
+            Math.sin(angle) * radius + Math.cos(angle) * wave + Math.sin(angle) * curl * 0.15,
+          );
+        };
+
+        pointAt(helpers.from, u);
+        pointAt(helpers.to, nextU);
+        helpers.direction.subVectors(helpers.to, helpers.from);
+        const segmentLength = helpers.direction.length();
+        helpers.direction.normalize();
+
+        helpers.object.position.copy(helpers.from).add(helpers.to).multiplyScalar(0.5);
+        helpers.object.quaternion.setFromUnitVectors(helpers.up, helpers.direction);
+        const taper = (isOralArm ? 1.16 : 1) * (1 - u * 0.5);
+        helpers.object.scale.set(taper, segmentLength / 0.15, taper);
+        helpers.object.updateMatrix();
+        mesh.setMatrixAt(instance++, helpers.object.matrix);
+      }
+    }
+
+    mesh.count = instance;
+    mesh.instanceMatrix.needsUpdate = true;
+  });
+
+  return (
+    <instancedMesh
+      ref={meshRef}
+      args={[geometry, material, INSTANCE_COUNT]}
+      frustumCulled={false}
+    />
+  );
+}
+
+function FloatingParticles({ reducedMotion }: { reducedMotion: boolean }) {
+  const geometry = useMemo(() => {
+    const positions = new Float32Array(110 * 3);
+    for (let i = 0; i < 110; i++) {
+      const seed = i + 1;
+      positions[i * 3] = Math.sin(seed * 12.9898) * 1.7;
+      positions[i * 3 + 1] = ((seed * 37) % 101) / 100 * 3.2 - 1.55;
+      positions[i * 3 + 2] = Math.cos(seed * 78.233) * 0.9;
+    }
+    const result = new BufferGeometry();
+    result.setAttribute('position', new BufferAttribute(positions, 3));
+    return result;
+  }, []);
+  const material = useMemo(
+    () =>
+      new PointsMaterial({
+        color: '#ff9eaa',
+        size: 0.022,
+        transparent: true,
+        opacity: 0.34,
+        blending: AdditiveBlending,
+        depthWrite: false,
+        sizeAttenuation: true,
+        toneMapped: false,
+      }),
+    [],
+  );
+
+  useFrame(({ clock }, delta) => {
+    if (reducedMotion) return;
+    const positions = geometry.attributes.position.array as Float32Array;
+    for (let i = 0; i < 110; i++) {
+      const offset = i * 3;
+      positions[offset + 1] += delta * (0.035 + (i % 5) * 0.009);
+      positions[offset] += Math.sin(clock.elapsedTime * 0.24 + i) * delta * 0.006;
+      if (positions[offset + 1] > 1.7) positions[offset + 1] = -1.6;
+    }
+    geometry.attributes.position.needsUpdate = true;
+  });
+
+  return <points geometry={geometry} material={material} />;
+}
+
+function JellyfishScene({ reducedMotion }: { reducedMotion: boolean }) {
+  const rigRef = useRef<Group>(null);
+
+  useFrame(({ clock }) => {
+    if (!rigRef.current || reducedMotion) return;
+    const time = clock.elapsedTime;
+    rigRef.current.position.y = Math.sin(time * 0.42) * 0.055;
+    rigRef.current.rotation.y = Math.sin(time * 0.2) * 0.12;
+    rigRef.current.rotation.z = Math.sin(time * 0.31) * 0.018;
+  });
+
+  return (
+    <group ref={rigRef}>
+      <JellyfishBell reducedMotion={reducedMotion} />
+      <TentacleField reducedMotion={reducedMotion} />
+      <FloatingParticles reducedMotion={reducedMotion} />
+    </group>
+  );
+}
+
+export function JellyfishFallback() {
+  return (
+    <div className="relative h-full min-h-[420px] w-full overflow-hidden" aria-hidden="true">
+      <svg viewBox="0 0 420 520" className="h-full w-full" fill="none">
+        <defs>
+          <radialGradient id="jelly-bell-fill" cx="50%" cy="28%" r="75%">
+            <stop offset="0%" stopColor="#ffc3cb" stopOpacity="0.9" />
+            <stop offset="42%" stopColor="#f04b68" stopOpacity="0.52" />
+            <stop offset="100%" stopColor="#7a1028" stopOpacity="0.12" />
+          </radialGradient>
+          <linearGradient id="jelly-tentacle" x1="0" y1="0" x2="1" y2="1">
+            <stop stopColor="#ffb4bf" stopOpacity="0.9" />
+            <stop offset="1" stopColor="#a10e2c" stopOpacity="0.12" />
+          </linearGradient>
+          <filter id="jelly-glow">
+            <feGaussianBlur stdDeviation="13" />
+          </filter>
+        </defs>
+        <ellipse cx="210" cy="165" rx="112" ry="76" fill="#e9234a" opacity="0.22" filter="url(#jelly-glow)" />
+        <path d="M98 168C102 92 145 55 210 55C275 55 318 92 322 168C285 195 135 195 98 168Z" fill="url(#jelly-bell-fill)" stroke="#ff9aa9" strokeOpacity="0.8" strokeWidth="2" />
+        <path d="M108 168C155 187 265 187 312 168" stroke="#ffb1bd" strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+        <path d="M148 180C130 253 154 301 122 385M174 184C164 260 194 317 174 440M199 185C206 280 190 346 208 462M224 185C239 266 219 341 243 438M250 182C272 250 247 318 286 405M276 178C306 238 283 292 321 362" stroke="url(#jelly-tentacle)" strokeWidth="3" strokeLinecap="round" />
+        <path d="M184 177C172 226 183 255 199 294M236 177C250 220 237 257 221 294" stroke="#ff8296" strokeWidth="4" strokeLinecap="round" opacity="0.8" />
+      </svg>
+    </div>
   );
 }
 
 export function JellyfishCanvas() {
   const reducedMotion = useReducedMotion();
-  const webglSupported = useWebGLSupport();
+  const webglSupported = useMemo(() => supportsWebGL(), []);
 
-  if (!webglSupported) {
-    return null;
-  }
+  if (!webglSupported) return <JellyfishFallback />;
 
   return (
-    <div className="relative w-full h-full" style={{ willChange: 'transform' }}>
+    <div
+      className="relative h-full min-h-[420px] w-full"
+      role="img"
+      aria-label="A luminous translucent jellyfish with a softly glowing bell and long flowing tentacles."
+      data-testid="jellyfish-visual"
+    >
       <Canvas
-        camera={{ position: [0, 0.5, 3.5], fov: 35 }}
-        gl={{ antialias: true, alpha: true, preserveDrawingBuffer: false, powerPreference: 'high-performance' }}
+        camera={{ position: [0, 0.12, 5.15], fov: 37, near: 0.1, far: 30 }}
+        dpr={[1, 1.75]}
+        gl={{
+          antialias: true,
+          alpha: true,
+          preserveDrawingBuffer: false,
+          powerPreference: 'high-performance',
+        }}
+        fallback={<JellyfishFallback />}
         shadows={false}
-        dpr={Math.min(window.devicePixelRatio, 2)}
         style={{ width: '100%', height: '100%', display: 'block' }}
       >
-        <color attach="background" args={['#0a0a0a']} />
-        <fog attach="fog" args={['#0a0a0a', 2, 10]} />
-
-        <ambientLight intensity={0.3} color="#1a1a1a" />
-        <directionalLight
-          position={[-2, 4, 3]}
-          intensity={1.2}
-          color="#fff5f0"
-          castShadow={false}
+        <color attach="background" args={['#090607']} />
+        <fog attach="fog" args={['#090607', 7, 14]} />
+        <ambientLight intensity={0.72} color="#ffd1d7" />
+        <hemisphereLight color="#ffdce1" groundColor="#310813" intensity={0.7} />
+        <directionalLight position={[-3, 4, 4]} intensity={1.55} color="#fff0f2" />
+        <directionalLight position={[3, 1, -3]} intensity={1.15} color="#ff385b" />
+        <spotLight
+          position={[1.2, 3.5, 3.2]}
+          angle={0.58}
+          penumbra={0.9}
+          intensity={2}
+          color="#ffb5bf"
+          distance={10}
         />
-        <directionalLight
-          position={[2, 2, -2]}
-          intensity={0.6}
-          color="#ff4455"
-          castShadow={false}
-        />
-        <pointLight position={[0, 2, 2]} intensity={0.8} color="#ff2a3a" distance={10} decay={2} />
-        <pointLight position={[0, -1, 0]} intensity={0.4} color="#c01c28" distance={5} decay={2} />
-
-        {/* Environment cubemap removed — no /env/ assets. Procedural lighting suffices. */}
-        {/* <Environment
-          background={false}
-          files={['px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png']}
-          path="/env/"
-          preset="studio"
-        /> */}
-
-        <JellyfishScene />
-
-        <OrbitControls
-          enablePan={false}
-          enableZoom={false}
-          enableRotate={!reducedMotion}
-          autoRotate={!reducedMotion}
-          autoRotateSpeed={0.2}
-          minPolarAngle={Math.PI * 0.3}
-          maxPolarAngle={Math.PI * 0.7}
-          target={[0, 0, 0]}
-        />
+        <pointLight position={[-2, -0.3, 1.5]} intensity={0.85} color="#ff3658" distance={7} />
+        <JellyfishScene reducedMotion={reducedMotion} />
       </Canvas>
     </div>
   );
