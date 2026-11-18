@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import {
   AdditiveBlending,
@@ -33,8 +33,8 @@ function useReducedMotion() {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   });
 
-  useMemo(() => {
-    if (typeof window === 'undefined') return undefined;
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
     const query = window.matchMedia('(prefers-reduced-motion: reduce)');
     const update = (event: MediaQueryListEvent) => setReduced(event.matches);
     query.addEventListener('change', update);
@@ -114,6 +114,17 @@ function JellyfishBell({ reducedMotion }: { reducedMotion: boolean }) {
     [],
   );
   const rimGeometry = useMemo(() => new TorusGeometry(1.02, 0.018, 12, 112), []);
+  const rimMaterial = useMemo(
+    () => new MeshBasicMaterial({
+      color: '#ff9ba9',
+      toneMapped: false,
+      transparent: true,
+      opacity: 0.92,
+      blending: AdditiveBlending,
+      depthWrite: false,
+    }),
+    [],
+  );
 
   useFrame(({ clock }) => {
     if (!bellRef.current || reducedMotion) return;
@@ -145,16 +156,9 @@ function JellyfishBell({ reducedMotion }: { reducedMotion: boolean }) {
       />
       <mesh
         geometry={rimGeometry}
+        material={rimMaterial}
         rotation={[Math.PI / 2, 0, 0]}
-        material={
-          <meshBasicMaterial
-            color="#ff9ba9"
-            toneMapped={false}
-            transparent
-            opacity={0.92}
-            blending={AdditiveBlending}
-            depthWrite={false}
-          />
+      />
         }
       />
       <pointLight position={[0, -0.12, 0.15]} color="#ff254e" intensity={1.35} distance={3.5} />
