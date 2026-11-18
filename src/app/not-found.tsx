@@ -46,7 +46,7 @@ export default function NotFound() {
             Back to Home
           </Link>
           <Link
-            href="#contact"
+            href="/#contact"
             className="group px-8 py-4 text-base font-medium text-text-secondary hover:text-white bg-transparent border border-white/10 hover:border-white/20 rounded-md transition-all duration-300 flex items-center gap-2"
           >
             <Search className="w-5 h-5" aria-hidden="true" />

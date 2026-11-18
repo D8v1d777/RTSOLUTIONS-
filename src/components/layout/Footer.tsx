@@ -5,7 +5,6 @@ import { config } from '@/lib/config';
 interface FooterLink {
   label: string;
   href: string;
-  disabled?: boolean;
   external?: boolean;
 }
 
@@ -18,8 +17,6 @@ const footerLinks = {
   ] as FooterLink[],
   work: [
     { label: 'Selected Work', href: '#work' },
-    { label: 'Case Studies', href: '#', disabled: true },
-    { label: 'Creative Directions', href: '#', disabled: true },
   ] as FooterLink[],
   connect: [
     { label: 'Start a Project', href: '#contact' },
@@ -68,7 +65,6 @@ export function Footer() {
                   <Link
                     href={link.href}
                     className="text-text-secondary hover:text-white transition-colors duration-200 text-sm link-underline"
-                    aria-disabled={link.disabled}
                   >
                     {link.label}
                   </Link>
@@ -87,12 +83,7 @@ export function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className={`text-sm transition-colors duration-200 ${
-                      link.disabled
-                        ? 'text-text-dim cursor-not-allowed'
-                        : 'text-text-secondary hover:text-white link-underline'
-                    }`}
-                    aria-disabled={link.disabled}
+                    className="text-text-secondary hover:text-white transition-colors duration-200 text-sm link-underline"
                   >
                     {link.label}
                     {link.external && (

@@ -28,6 +28,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || config.url;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  alternates: { canonical: '/' },
   title: 'RTSOLUTIONS — Creative Frontend Studio',
   description: 'An independent software and digital product studio. We build custom websites, web applications, and desktop applications. Our differentiator is creative frontend craft.',
   keywords: ['software studio', 'web development', 'frontend craft', 'web applications', 'desktop applications', 'digital products'],
