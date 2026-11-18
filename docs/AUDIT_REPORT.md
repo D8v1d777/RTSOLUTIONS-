@@ -21,7 +21,7 @@ The RTSOLUTIONS website implementation is **substantially complete and functiona
 | Responsive (4 viewports) | ✅ Verified via Playwright |
 | TypeScript Strict | ✅ Pass |
 | Production Build | ✅ Pass |
-| Lint | ✅ Pass (TS 6.1.3 pinned) |
+| Lint | ✅ Pass (TS 6.0.3 pinned) |
 | E2E Tests | ✅ 15/15 Chromium |
 | Accessibility Baseline | ✅ Semantic, keyboard, reduced-motion |
 
@@ -39,7 +39,7 @@ The RTSOLUTIONS website implementation is **substantially complete and functiona
 - **Tailwind CSS 4** with `@theme` tokens — Correctly configured
 - **Three.js 0.187 / R3F 9.8 / drei 10.7** — Compatible versions
 - **Motion 14 (Framer Motion)** — Current
-- **TypeScript 6.1.3** — Pinned for `eslint-config-next` compatibility (TS 7.x unsupported)
+- **TypeScript 6.0.3** — Pinned for `eslint-config-next` compatibility (TS 7.x unsupported)
 - **Playwright 1.65** — Chromium-only CI (Firefox/WebKit need system deps)
 
 ### Reference Image
@@ -185,7 +185,7 @@ Used consistently across cards, form, footer. Backdrop-filter blur(20-24px) with
 | Issue | Status | Evidence |
 |-------|--------|----------|
 | **Flaky nav E2E test** | ✅ **Fixed in implementation** | Test targets `div.hidden.md\\:flex >> a` specifically; 15/15 pass consistently |
-| **ESLint + TS version** | ⚠️ **Documented limitation** | TS 6.1.3 pinned; `eslint-config-next` incompatible with TS 7.x as of 2026-11 |
+| **ESLint + TS version** | ⚠️ **Documented limitation** | TS 6.0.3 pinned; `eslint-config-next` incompatible with TS 7.x as of 2026-11 |
 | **Missing HDR/EXR env assets** | ⚠️ **Documented limitation** | `/env/` cubemap 404; `Environment` preset falls back to procedural |
 | **Placeholder social links** | ⚠️ **Documented limitation** | Social profile URLs are blank and their links are suppressed while `isPlaceholder: true`. |
 | **Contact form limitations** | ⚠️ **Known limitation** | No backend delivery; placeholder mode suppresses contact links; configured mode prepares a mailto draft only; honeypot is client-side only |
@@ -288,7 +288,7 @@ npx playwright test tests/capture-screenshots.spec.ts --project=chromium  # 4/4 
 
 ## Known Limitations (Post-Fix, Updated)
 
-1. **TS 6.1.3 pin** — Required for ESLint compatibility; upgrade when `typescript-eslint` supports TS 7
+1. **TS 6.0.3 pin** — Required for ESLint compatibility; upgrade when `typescript-eslint` supports TS 7
 2. **Contact form mailto fallback** — No backend; swap to API route when infrastructure exists; honeypot is client-side only (documented)
 3. **Social links** — Currently blank and suppressed; add only verified profile URLs before enabling
 4. **Environment cubemap** — `Environment` component removed; procedural lighting suffices. Add HDR/EXR cubemap to `public/env/` if reflections desired
