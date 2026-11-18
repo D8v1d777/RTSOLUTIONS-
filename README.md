@@ -162,7 +162,7 @@ export const config = {
 
 ## Known Limitations
 
-1. **TypeScript version:** Pinned to 6.1.3 for `eslint-config-next` compatibility (TS 7.x unsupported as of 2026-11).
+1. **TypeScript version:** Pinned to 6.0.3 for `eslint-config-next` compatibility (TS 7.x unsupported as of 2026-11).
 2. **WebGL fallback:** The 3D jellyfish gracefully degrades to SVG on WebGL failure, but GPU-dependent features (transmission, SSS) are unavailable in fallback.
 3. **Contact form:** Uses `mailto:` fallback; no backend endpoint implemented. Replace with API route when infrastructure exists. Honeypot field is client-side filtering only; it is not server-side bot protection.
 4. **Contact/social details:** Intentionally blank and suppressed until owner-verified. Configure `src/lib/config.ts` before enabling these links.
