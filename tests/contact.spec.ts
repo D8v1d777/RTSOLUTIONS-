@@ -198,6 +198,11 @@ test.describe('Contact Form - E2E Tests', () => {
     await expect(page.getByText('No verified recipient is configured. Your draft stays in this open page only; leaving or refreshing clears it. Nothing is sent or stored by RTSOLUTIONS.')).toBeVisible();
   });
 
+  test('placeholder mode labels the submit action honestly', async ({ page }) => {
+    await expect(page.locator('#contact button[type="submit"]')).toHaveText('Review contact status');
+    await expect(page.locator('#contact')).toContainText('No verified contact address is published yet.');
+  });
+
   test('no false storage claim in footer text', async ({ page }) => {
     // Check that the old false storage claim is gone
     await expect(page.locator('text=By submitting, you agree we may store this information')).not.toBeVisible();
