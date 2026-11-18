@@ -367,7 +367,7 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jet
 **Date:** 2026-11-17  
 **Status:** Placeholder
 
-**Note:** `@react-three/drei` `Environment` preset="studio" expects `/env/px.png` etc. Add production HDR/EXR cubemap when available. Currently falls back to procedural lighting.
+**Audit update (2026-11-18):** The Drei `Environment` component was removed in commit `9917380` because the referenced cubemap files were absent. The current scene uses procedural lighting and does not request `/env/px.png` assets. Reintroduce environment mapping only alongside committed HDR/EXR assets and verified visual benefit.
 
 ---
 
