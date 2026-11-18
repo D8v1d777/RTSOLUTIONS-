@@ -161,7 +161,7 @@ export const config = {
 |-------|---------|--------|
 | Production build | `npm run build` | ✅ Pass (clean, no warnings) |
 | TypeScript strict | `npm run typecheck` | ✅ Pass |
-| Lint | `npx eslint src/ --ext .ts,.tsx --quiet` | ✅ Pass (0 errors) |
+| Lint | `npm run lint` | ⚠️ Migrated to ESLint CLI for Next.js 16; rerun this script in the project environment (the audit's direct CLI check reported 0 errors and 1 warning) |
 | E2E tests (Chromium) | `npm run test` | ✅ 19/19 Pass |
 | Viewport screenshots | `npx playwright test tests/capture-screenshots.spec.ts` | ✅ 4/4 Captured (fresh) |
 | Lighthouse CI | `npm run lighthouse` | ⏳ Pending |
