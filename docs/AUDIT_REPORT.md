@@ -12,7 +12,7 @@
 
 The RTSOLUTIONS website implementation is **substantially complete and functionally sound**, with a distinctive visual identity that successfully differentiates from generic agency templates. The 3D jellyfish is a genuine real-time procedural WebGL scene—not a GIF or video—and performs well across target viewports.
 
-**Verdict: Production-ready with P0 fixes applied.** The site reads as a premium creative technology studio with honest content, coherent art direction, and solid engineering foundations.
+**Verdict at audit time: the frontend foundation was strong and the identified P0 fixes were applied. Subsequent source review found a contact-flow blocker: form submission only simulates success and does not deliver a message. Public launch must wait for issue #3 and verified business details.
 
 | Check | Status |
 |-------|--------|
@@ -186,7 +186,7 @@ Used consistently across cards, form, footer. Backdrop-filter blur(20-24px) with
 | **ESLint + TS version** | ⚠️ **Documented limitation** | TS 6.1.3 pinned; `eslint-config-next` incompatible with TS 7.x as of 2026-11 |
 | **Missing HDR/EXR env assets** | ⚠️ **Documented limitation** | `/env/` cubemap 404; `Environment` preset falls back to procedural |
 | **Placeholder social links** | ⚠️ **Documented limitation** | All point to `rtsolutions` handles that don't exist; `isPlaceholder: true` |
-| **Contact form limitations** | ⚠️ **Documented limitation** | `mailto:` fallback; no backend; honeypot not implemented |
+| **Contact form limitations** | ⚠️ **Launch blocker** | Client-side validation only; handler simulates success and clears the form without email delivery or backend; honeypot is client-side only |
 
 **Distinction:** Items 2-5 are **documented intentional limitations** (recorded in README, TECHNICAL_DECISIONS, QA_REPORT) — not defects. Only the missing assets (P0) are genuine production blockers.
 
@@ -278,7 +278,7 @@ npx playwright test tests/capture-screenshots.spec.ts --project=chromium  # 4/4 
 ## Known Limitations (Post-Fix, Unchanged)
 
 1. **TS 6.1.3 pin** — Required for ESLint compatibility; upgrade when `typescript-eslint` supports TS 7
-2. **Contact form mailto fallback** — No backend; swap to API route when infrastructure exists
+2. **Contact form delivery (launch blocker)** — Current handler waits 1.5s, shows “Message sent,” then clears the form without sending or opening an email draft. Track/fix in issue #3.
 3. **Social links placeholders** — Update `src/lib/config.ts` when accounts created; flip `isPlaceholder: false`
 4. **Environment lighting** — The `Environment` component was removed in `9917380`; procedural lighting is the current implementation. Add a tracked HDR/EXR asset only if visual testing justifies it.
 5. **Firefox/WebKit Playwright** — Need system deps (`libgtk-4`, etc.); Chromium primary CI target
@@ -300,8 +300,13 @@ npx playwright test tests/capture-screenshots.spec.ts --project=chromium  # 4/4 
 
 ---
 
-**Audit Complete.** The implementation is strong — the fixes above are surgical and targeted. No redesign needed. The site genuinely reads as a premium creative technology studio.
+**Audit findings:** The implementation is visually and structurally strong, and the original P0 fixes are present. However, a follow-up source inspection found an unimplemented contact delivery path and misleading success/privacy copy. Treat issue #3 as a launch blocker.
 
 ## Post-Audit Repository Reconciliation (2026-11-18)
 
 The audit commit `9917380` is the application-code verification point. A subsequent repository-hygiene commit `69a20dd` restores the original visual reference at `docs/reference/visual-direction-reference.webp` and removes all 13 tracked `.omc/` session/replay artifacts from the PR branch. This follow-up changes no application source; the build/typecheck/lint/E2E results above refer to the audited application commit `9917380`. The `.gitignore` now contains explicit `.omc` exclusion patterns so those local artifacts are not reintroduced. `package.json` was also corrected in follow-up `0eff927` to use `eslint src/ --ext .ts,.tsx` because Next.js 16 removed `next lint`; rerun `npm run lint` in the project environment before merge.
+
+
+## Follow-up Contact-Flow Finding (2026-11-18)
+
+Direct inspection of `src/components/sections/Contact.tsx` shows `handleSubmit` prevents default submission, waits 1.5 seconds, sets the UI to `success`, and resets the form. It does not call an API route or navigate to a `mailto:` URL. The success panel says “Message sent” despite no message being sent. The honeypot is checked only in client-side validation. The privacy copy says the site may store the information and links to `#`, but no storage mechanism or privacy policy is configured. The contact recipient and social links remain placeholders in `src/lib/config.ts`; response time, CET hours, and USD budget ranges also need owner verification. These issues are tracked in [GitHub issue #3](https://github.com/D8v1d777/RTSOLUTIONS-/issues/3) and block public launch.
