@@ -156,9 +156,15 @@ test.describe('Responsive Design', () => {
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
 
-      // No horizontal overflow
-      const bodyWidth = await page.evaluate(() => document.body.scrollWidth);
-      expect(bodyWidth).toBeLessThanOrEqual(vp.width + 20); // Small tolerance for scrollbars
+      // Assert the document itself fits the viewport; do not hide overflow behind a tolerance.
+      const dimensions = await page.evaluate(() => ({
+        innerWidth: window.innerWidth,
+        scrollWidth: document.documentElement.scrollWidth,
+      }));
+      expect(
+        dimensions.scrollWidth,
+        `Horizontal overflow at ${vp.width}x${vp.height}`
+      ).toBeLessThanOrEqual(dimensions.innerWidth);
 
       // Hero should be visible
       await expect(page.locator('#hero')).toBeVisible();
