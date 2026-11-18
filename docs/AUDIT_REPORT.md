@@ -266,7 +266,7 @@ npx playwright test tests/capture-screenshots.spec.ts --project=chromium  # 4/4 
 |-------|---------|--------|-------|
 | Production Build | `npm run build` | ✅ Pass | Warning: metadataBase, OG image 404 |
 | TypeScript Strict | `npm run typecheck` | ✅ Pass | 0 errors |
-| Lint | `npm run lint` | ✅ Pass | 0 issues |
+| Lint | `npx eslint src/ --ext .ts,.tsx --quiet` | ✅ Pass | 0 errors; one pre-existing warning is suppressed by `--quiet` |
 | E2E (Chromium) | `npm run test` | ✅ 15/15 | All pass |
 | Viewport Screenshots | `capture-screenshots.spec.ts` | ✅ 4/4 | Mobile, Tablet, Desktop, Wide |
 | Lighthouse CI | `npm run lighthouse` | ⏳ Pending | Requires dev server |
@@ -304,4 +304,4 @@ npx playwright test tests/capture-screenshots.spec.ts --project=chromium  # 4/4 
 
 ## Post-Audit Repository Reconciliation (2026-11-18)
 
-The audit commit `9917380` is the application-code verification point. A subsequent repository-hygiene commit `69a20dd` restores the original visual reference at `docs/reference/visual-direction-reference.webp` and removes all 13 tracked `.omc/` session/replay artifacts from the PR branch. This follow-up changes no application source; the build/typecheck/lint/E2E results above refer to the audited application commit `9917380`. The `.gitignore` now contains explicit `.omc` exclusion patterns so those local artifacts are not reintroduced.
+The audit commit `9917380` is the application-code verification point. A subsequent repository-hygiene commit `69a20dd` restores the original visual reference at `docs/reference/visual-direction-reference.webp` and removes all 13 tracked `.omc/` session/replay artifacts from the PR branch. This follow-up changes no application source; the build/typecheck/lint/E2E results above refer to the audited application commit `9917380`. The `.gitignore` now contains explicit `.omc` exclusion patterns so those local artifacts are not reintroduced. `package.json` was also corrected in follow-up `0eff927` to use `eslint src/ --ext .ts,.tsx` because Next.js 16 removed `next lint`; rerun `npm run lint` in the project environment before merge.
