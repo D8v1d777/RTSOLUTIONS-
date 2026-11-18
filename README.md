@@ -136,13 +136,13 @@ All placeholder business details are centralized in `src/lib/config.ts`:
 
 ```typescript
 export const config = {
-  email: '',                               // Set only after owner verifies recipient
   domain: '',                               // Set only after owner verifies domain
   social: {
     github: '',
     twitter: '',
     linkedin: '',
   },
+  contact: { verifiedEmail: '' },       // Single verified recipient field
   isPlaceholder: true,                  // Keep true until all public contact details are verified
 };
 ```
