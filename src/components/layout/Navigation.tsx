@@ -19,6 +19,8 @@ export function Navigation() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Hydration gate: keep server and first client render identical.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
