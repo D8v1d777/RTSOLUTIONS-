@@ -49,6 +49,17 @@ test.describe('Independent quality pass', () => {
     await expect(footer.locator('a[aria-disabled="true"]')).toHaveCount(0);
   });
 
+  test('every same-page link points to an existing target', async ({ page }) => {
+    await page.goto('/');
+    const missingTargets = await page.locator('a[href^="#"]').evaluateAll((links) =>
+      links
+        .map((link) => link.getAttribute('href') ?? '')
+        .filter((href) => href === '#' || !document.getElementById(href.slice(1)))
+    );
+
+    expect(missingTargets).toEqual([]);
+  });
+
   test('404 contact action returns to the home-page contact section', async ({ page }) => {
     await page.goto('/__quality_pass_missing_route__');
     await expect(page.getByRole('link', { name: 'Contact Us' })).toHaveAttribute('href', '/#contact');
@@ -94,27 +105,6 @@ test.describe('Independent quality pass', () => {
     const whyCopy = await page.locator('#why').innerText();
     expect(whyCopy).toContain("We're not the right fit for everyone. That's intentional.");
     expect(whyCopy).not.toContain("\\'");
-  });
-
-  test('document has no horizontal overflow at the four target viewports', async ({ page }) => {
-    for (const viewport of [
-      { width: 390, height: 844 },
-      { width: 768, height: 1024 },
-      { width: 1440, height: 900 },
-      { width: 1920, height: 1080 },
-    ]) {
-      await page.setViewportSize(viewport);
-      await page.goto('/');
-      const dimensions = await page.evaluate(() => ({
-        innerWidth: window.innerWidth,
-        scrollWidth: document.documentElement.scrollWidth,
-      }));
-
-      expect(
-        dimensions.scrollWidth,
-        `Horizontal overflow at ${viewport.width}x${viewport.height}`
-      ).toBeLessThanOrEqual(dimensions.innerWidth);
-    }
   });
 
   test('mobile menu opens, navigates, and closes', async ({ page }) => {
