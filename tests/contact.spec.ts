@@ -1,6 +1,53 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Contact Form', () => {
+// Import the pure function for unit testing
+import { buildMailtoUrl } from '@/components/sections/Contact';
+
+test.describe('Contact Form - Unit Tests', () => {
+  const formData = {
+    name: 'Test User',
+    email: 'test@example.com',
+    projectType: 'website',
+    budget: '25-50',
+    timeline: '1-3',
+    message: 'This is a test message with special chars: & = % ? #',
+    website: '', // honeypot
+  };
+
+  test('buildMailtoUrl generates correct URL with all fields', () => {
+    const verifiedEmail = 'hello@rtsolutions.dev';
+    const url = buildMailtoUrl(formData, verifiedEmail);
+
+    expect(url).toContain('mailto:hello@rtsolutions.dev');
+    expect(url).toContain('subject=Project%20Inquiry%3A%20website');
+    expect(url).toContain('Name%3A%20Test%20User');
+    expect(url).toContain('Email%3A%20test%40example.com');
+    expect(url).toContain('Project%20Type%3A%20website');
+    expect(url).toContain('Budget%20Range%3A%2025-50');
+    expect(url).toContain('Timeline%3A%201-3');
+    expect(url).toContain('Project%20Details%3A');
+    expect(url).toContain('This%20is%20a%20test%20message%20with%20special%20chars%3A%20%26%20%3D%20%25%20%3F%20%23');
+  });
+
+  test('buildMailtoUrl handles missing optional fields', () => {
+    const data = { ...formData, budget: '', timeline: '' };
+    const verifiedEmail = 'hello@rtsolutions.dev';
+    const url = buildMailtoUrl(data, verifiedEmail);
+
+    expect(url).toContain('Budget%20Range%3A%20Not%20specified');
+    expect(url).toContain('Timeline%3A%20Not%20specified');
+  });
+
+  test('buildMailtoUrl uses verified email from config', () => {
+    const verifiedEmail = 'verified@company.com';
+    const url = buildMailtoUrl(formData, verifiedEmail);
+
+    expect(url).toContain('mailto:verified@company.com');
+    expect(url).not.toContain('hello@rtsolutions.dev');
+  });
+});
+
+test.describe('Contact Form - E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
@@ -159,28 +206,49 @@ test.describe('Contact Form', () => {
     await expect(honeypot).toHaveAttribute('aria-hidden', 'true');
   });
 
-  test('mailto body contains all form fields correctly encoded', async ({ page }) => {
-    // We can't directly test mailto opening in headless, but we can verify the buildMailtoUrl logic
-    // by checking the form generates the correct data structure
-    await page.fill('input[name="name"]', 'Test User');
-    await page.fill('input[name="email"]', 'test@example.com');
-    await page.selectOption('select[name="projectType"]', 'website');
-    await page.selectOption('select[name="budget"]', '25-50');
-    await page.selectOption('select[name="timeline"]', '1-3');
-    await page.fill('textarea[name="message"]', 'This is a test message with special chars: & = % ? #');
+  test('form options are data-driven from config - project types', async ({ page }) => {
+    // Check that project type options match config
+    const options = await page.locator('select[name="projectType"] option').allTextContents();
+    expect(options).toContain('Custom Website');
+    expect(options).toContain('Web Application');
+    expect(options).toContain('Desktop Application');
+    expect(options).toContain('Multiple / Not Sure');
+  });
 
-    // Verify form data is correctly captured (we test the URL encoding logic separately)
-    await expect(page.locator('input[name="name"]')).toHaveValue('Test User');
-    await expect(page.locator('input[name="email"]')).toHaveValue('test@example.com');
-    await expect(page.locator('select[name="projectType"]')).toHaveValue('website');
-    await expect(page.locator('select[name="budget"]')).toHaveValue('25-50');
-    await expect(page.locator('select[name="timeline"]')).toHaveValue('1-3');
-    await expect(page.locator('textarea[name="message"]')).toHaveValue('This is a test message with special chars: & = % ? #');
+  test('form options are data-driven from config - budget ranges', async ({ page }) => {
+    // Check that budget options match config
+    const options = await page.locator('select[name="budget"] option').allTextContents();
+    expect(options).toContain('$10k – $25k');
+    expect(options).toContain('$25k – $50k');
+    expect(options).toContain('$50k – $100k');
+    expect(options).toContain('$100k+');
+    expect(options).toContain('Prefer to discuss');
+  });
+
+  test('form options are data-driven from config - timelines', async ({ page }) => {
+    // Check that timeline options match config
+    const options = await page.locator('select[name="timeline"] option').allTextContents();
+    expect(options).toContain('ASAP');
+    expect(options).toContain('1–3 months');
+    expect(options).toContain('3–6 months');
+    expect(options).toContain('6+ months');
+    expect(options).toContain('Flexible');
   });
 
   test('response time and business hours come from config', async ({ page }) => {
     // These are visible in the info column - target the specific contact info cards
     await expect(page.locator('#contact >> text=Response Time').locator('..').locator('text=1–2 business days')).toBeVisible();
     await expect(page.locator('#contact >> text=Work Hours').locator('..').locator('text=Mon–Fri, 9am–6pm CET')).toBeVisible();
+  });
+
+  test('placeholder notice visible in info column when config.isPlaceholder is true', async ({ page }) => {
+    // Check for placeholder notice in info column - use more specific selector
+    await expect(page.locator('#contact').locator('text=Placeholder contact details — replace with verified info in config').first()).toBeVisible();
+  });
+
+  test('email link in info column uses verifiedEmail from config', async ({ page }) => {
+    const emailLink = page.locator('#contact').locator('a[href^="mailto:"]').first();
+    await expect(emailLink).toHaveAttribute('href', 'mailto:hello@rtsolutions.dev');
+    await expect(emailLink).toContainText('hello@rtsolutions.dev');
   });
 });

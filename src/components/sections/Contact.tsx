@@ -5,22 +5,50 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Mail, MessageSquare, ExternalLink, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import { config } from '@/lib/config';
 
+// Types for form data
+type FormData = {
+  name: string;
+  email: string;
+  projectType: string;
+  budget: string;
+  timeline: string;
+  message: string;
+  // Honeypot field - bots fill this, humans don't see it (client-side filtering only)
+  website: string;
+};
+
+// Pure function for mailto URL generation - testable independently
+export const buildMailtoUrl = (data: FormData, verifiedEmail: string): string => {
+  const subject = encodeURIComponent(`Project Inquiry: ${data.projectType}`);
+  const bodyLines = [
+    `Name: ${data.name}`,
+    `Email: ${data.email}`,
+    `Project Type: ${data.projectType}`,
+    `Budget Range: ${data.budget || 'Not specified'}`,
+    `Timeline: ${data.timeline || 'Not specified'}`,
+    '',
+    'Project Details:',
+    data.message,
+  ];
+  const body = encodeURIComponent(bodyLines.join('\n'));
+  return `mailto:${verifiedEmail}?subject=${subject}&body=${body}`;
+};
+
 export function Contact() {
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'mailto-sent' | 'placeholder-warning'>('idle');
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     projectType: '',
     budget: '',
     timeline: '',
     message: '',
-    // Honeypot field - bots fill this, humans don't see it (client-side filtering only)
     website: '',
   });
-  const [errors, setErrors] = useState<Partial<typeof formData>>({});
+  const [errors, setErrors] = useState<Partial<FormData>>({});
 
   const validateForm = () => {
-    const newErrors: Partial<typeof formData> = {};
+    const newErrors: Partial<FormData> = {};
     if (!formData.name.trim()) newErrors.name = 'Name is required';
     if (!formData.email.trim()) newErrors.email = 'Email is required';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Valid email required';
@@ -36,22 +64,6 @@ export function Contact() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const buildMailtoUrl = (data: typeof formData) => {
-    const subject = encodeURIComponent(`Project Inquiry: ${data.projectType}`);
-    const bodyLines = [
-      `Name: ${data.name}`,
-      `Email: ${data.email}`,
-      `Project Type: ${data.projectType}`,
-      `Budget Range: ${data.budget || 'Not specified'}`,
-      `Timeline: ${data.timeline || 'Not specified'}`,
-      '',
-      'Project Details:',
-      data.message,
-    ];
-    const body = encodeURIComponent(bodyLines.join('\n'));
-    return `mailto:${config.contact.verifiedEmail}?subject=${subject}&body=${body}`;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -61,13 +73,14 @@ export function Contact() {
     // Brief delay to show submitting state
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    if (config.contact.isPlaceholder) {
+    // Use single source of truth: config.isPlaceholder
+    if (config.isPlaceholder) {
       setFormState('placeholder-warning');
       return;
     }
 
     // Open mailto with encoded form data
-    const mailtoUrl = buildMailtoUrl(formData);
+    const mailtoUrl = buildMailtoUrl(formData, config.contact.verifiedEmail);
     window.location.href = mailtoUrl;
 
     setFormState('mailto-sent');
@@ -208,13 +221,10 @@ export function Contact() {
                         Contact details are placeholders
                       </h3>
                       <p className="text-text-secondary mb-4">
-                        The email address in config is not yet verified. Please email us directly at
+                        The contact configuration is not yet verified. Please update
                         <code className="bg-white/5 px-2 py-0.5 rounded text-crimson-glow font-mono text-sm">
-                          {config.contact.verifiedEmail}
-                        </code>
-                        or update <code className="bg-white/5 px-2 py-0.5 rounded text-crimson-glow font-mono text-sm">
                           src/lib/config.ts
-                        </code> with a verified address and set <code className="bg-white/5 px-2 py-0.5 rounded text-crimson-glow font-mono text-sm">isPlaceholder: false</code>.
+                        </code> with a verified email address and set <code className="bg-white/5 px-2 py-0.5 rounded text-crimson-glow font-mono text-sm">isPlaceholder: false</code>.
                       </p>
                       <p className="text-text-secondary text-sm mb-6">
                         Your form data has been preserved below. You can copy it into your email client.
@@ -373,10 +383,11 @@ export function Contact() {
                         <option value="" disabled>
                           Select project type
                         </option>
-                        <option value="website">Custom Website</option>
-                        <option value="webapp">Web Application</option>
-                        <option value="desktop">Desktop Application</option>
-                        <option value="multiple">Multiple / Not Sure</option>
+                        {config.projectTypes.map((pt) => (
+                          <option key={pt.value} value={pt.value}>
+                            {pt.label}
+                          </option>
+                        ))}
                       </select>
                       {errors.projectType && (
                         <p id="projectType-error" className="mt-1.5 text-sm text-crimson-glow" role="alert">
@@ -402,11 +413,11 @@ export function Contact() {
                         disabled={formState === 'submitting'}
                       >
                         <option value="">Select budget range</option>
-                        <option value="10-25">$10k – $25k</option>
-                        <option value="25-50">$25k – $50k</option>
-                        <option value="50-100">$50k – $100k</option>
-                        <option value="100+">$100k+</option>
-                        <option value="unknown">Prefer to discuss</option>
+                        {config.budgetRanges.map((br) => (
+                          <option key={br.value} value={br.value}>
+                            {br.label}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -429,11 +440,11 @@ export function Contact() {
                         disabled={formState === 'submitting'}
                       >
                         <option value="">Select timeline</option>
-                        <option value="asap">ASAP</option>
-                        <option value="1-3">1–3 months</option>
-                        <option value="3-6">3–6 months</option>
-                        <option value="6+">6+ months</option>
-                        <option value="flexible">Flexible</option>
+                        {config.timelines.map((t) => (
+                          <option key={t.value} value={t.value}>
+                            {t.label}
+                          </option>
+                        ))}
                       </select>
                     </div>
 

@@ -76,10 +76,10 @@ export const config = {
     { value: 'flexible', label: 'Flexible' },
   ],
 
-  // Contact Configuration
+  // Contact Configuration (single source of truth for contact form)
   contact: {
     verifiedEmail: 'hello@rtsolutions.dev',
-    isPlaceholder: true,
+    // Use config.isPlaceholder as single source - contact form checks this
     responseTime: '1–2 business days',
     businessHours: 'Mon–Fri, 9am–6pm CET',
     privacyPolicyUrl: '',
