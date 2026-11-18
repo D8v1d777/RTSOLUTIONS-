@@ -1,30 +1,23 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+
+const browserErrors = new WeakMap<Page, string[]>();
 
 test.describe('RTSOLUTIONS Homepage', () => {
   test.beforeEach(async ({ page }) => {
+    const errors: string[] = [];
+    browserErrors.set(page, errors);
+    page.on('console', (message) => {
+      if (message.type() === 'error') errors.push(message.text());
+    });
+    page.on('pageerror', (error) => errors.push(error.message));
+
     await page.goto('/');
     await page.waitForLoadState('networkidle');
   });
 
-  test('should load without console errors', async ({ page }) => {
-    const errors: string[] = [];
-    page.on('console', (msg) => {
-      if (msg.type() === 'error') {
-        errors.push(msg.text());
-      }
-    });
-    page.on('pageerror', (err) => {
-      errors.push(err.message);
-    });
-
-    await page.waitForTimeout(2000); // Allow 3D scene to initialize
-
-    // Filter out known non-critical errors
-    const criticalErrors = errors.filter(
-      (e) => !e.includes('favicon') && !e.includes('Extension') && !e.includes('webgl')
-    );
-
-    expect(criticalErrors).toHaveLength(0);
+  test('should load without console or page errors', async ({ page }) => {
+    await page.waitForTimeout(2000); // Allow client-side interactions to settle
+    expect(browserErrors.get(page) ?? []).toEqual([]);
   });
 
   test('should have correct title and meta', async ({ page }) => {
