@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-18  
 **Branch:** `claude/fable-5-2-build`  
-**Commit:** `2b1c37e` (plus audit fixes + contact system completion)  
+**Commit:** Preview branch `claude/fable-5-2-build` — current SHA is tracked in the Render deploy record  
 **Environment:** Linux (Node 20), Next.js 16.4.6, React 19, Chromium 1255
 
 ---
@@ -14,11 +14,11 @@
 | Production Build | ✅ Pass | `npm run build` — 0 TypeScript errors, 4 static pages generated, **no metadataBase warning** |
 | TypeScript Strict | ✅ Pass | `npm run typecheck` — 0 errors |
 | Lint | ✅ Pass | `eslint-config-next` with TS 6.1.3 — 0 errors, 1 warning (unused var) |
-| E2E Tests (Chromium) | ✅ 31/31 Pass | Playwright: sections, nav, CTAs, canvas/fallback, footer, form, a11y, responsive + 4 viewport screenshots + 12 contact form tests |
+| E2E Tests (Chromium) | ⚠️ Historical 31/31 report; rerun on current SHA | Playwright: sections, nav, CTAs, canvas/fallback, footer, form, a11y, responsive + 4 viewport screenshots + 12 contact form tests |
 | Viewport Screenshots | ✅ 4/4 Captured | Fresh captures at 390×844, 768×1024, 1440×900, 1920×1080 |
-| Lighthouse CI | ⏳ Pending | Requires running dev server |
+| Lighthouse CI | ⏳ Pending | Requires running deployed preview |
 
-**Overall:** Production-ready. All P0/P1 blockers resolved. All critical functionality verified including contact system with honest mailto fallback.
+**Overall:** Render preview candidate. Contact and social details are deliberately unconfigured and hidden. The current Render build is the authoritative build/typecheck/lint gate; the historical Playwright results below predate the latest placeholder-suppression changes and must not be treated as current-commit verification.
 
 ---
 
@@ -252,8 +252,8 @@ All tests configured with `screenshot: 'only-on-failure'`, `video: 'retain-on-fa
 | ID | Issue | Severity | Status |
 |----|-------|----------|--------|
 | QA-001 | TypeScript 6.1.3 pinned for ESLint compatibility | Medium | Documented; upgrade when `typescript-eslint` supports TS 7 |
-| QA-002 | Contact form uses `mailto:` fallback — no backend | Medium | Documented; swap to API route when infrastructure exists |
-| QA-003 | Social links are placeholders | Low | Update `src/lib/config.ts` when accounts created; flip `isPlaceholder: false` |
+| QA-002 | Contact form uses `mailto:` fallback — no backend | Medium | Mailto draft only when verified recipient is configured; placeholder mode suppresses it |
+| QA-003 | Social links are unconfigured | Low | Links are suppressed until owner supplies verified profile URLs |
 | QA-004 | Firefox/WebKit Playwright need system deps (`libgtk-4`, etc.) | Low | CI uses Chromium only |
 | QA-005 | No Content Security Policy headers | Medium | Recommended for production deployment |
 | QA-006 | Reference image | — | Resolved — committed at `docs/reference/visual-direction-reference.webp`; no manual upload required |
@@ -268,7 +268,7 @@ All tests configured with `screenshot: 'only-on-failure'`, `video: 'retain-on-fa
 npm run build           # Production build + typecheck (clean, no warnings)
 npm run typecheck       # TypeScript only (0 errors)
 npx eslint src/ --ext .ts,.tsx --quiet  # ESLint (0 errors)
-npm run test            # Playwright E2E (Chromium) — 31/31 pass
+npm run test            # Playwright E2E (Chromium) — rerun required on current preview SHA
 npx playwright test tests/capture-screenshots.spec.ts --project=chromium  # 4/4 screenshots
 npm run lighthouse      # Lighthouse CI (needs `npm run dev` running)
 npm run dev             # Turbopack dev server (http://localhost:3000)
