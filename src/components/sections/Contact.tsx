@@ -488,7 +488,9 @@ export function Contact() {
                   </button>
 
                   <p className="text-xs text-text-dim text-center sm:text-left">
-                    This form opens a mailto: draft in your email client. No data is stored on our servers.
+                    {config.isPlaceholder || !config.contact.verifiedEmail
+                      ? 'No verified contact recipient is configured. Your message remains in this form and is not sent or stored by RTSOLUTIONS.'
+                      : 'This form prepares a mailto: draft in your email client. You must review and send it yourself; no message is transmitted to RTSOLUTIONS until you do.'}
                     {config.contact.privacyPolicyUrl && (
                       <>
                         <br />
