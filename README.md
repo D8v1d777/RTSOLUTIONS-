@@ -5,7 +5,7 @@ An independent software and digital product studio. We build custom websites, we
 ## Project Status
 
 **Current branch:** `claude/fable-5-2-build`  
-**Latest verification:** 2026-11-18 — Production build passes (clean, no warnings), TypeScript strict mode clean, Playwright tests pass (19/19 Chromium), fresh screenshots captured at all 4 target viewports. All P0/P1 audit findings resolved.
+**Latest verified application commit:** `9917380` — build, typecheck, direct ESLint CLI check, 19/19 Chromium tests, and four viewport captures were reported passing. Repository follow-up restored the reference image, removed tracked `.omc/` artifacts, and migrated the lint script. **Public launch is not yet ready:** the contact form currently simulates success without sending a message; see [issue #3](https://github.com/D8v1d777/RTSOLUTIONS-/issues/3).
 
 ## Visual Direction Reference
 
@@ -74,7 +74,7 @@ src/
 │       ├── SelectedWork.tsx     # 6 project cards (honest statuses)
 │       ├── Process.tsx          # 6-step timeline
 │       ├── WhyRTSolutions.tsx   # 6 differentiators + "not for everyone"
-│       └── Contact.tsx          # Form with validation, mailto fallback
+│       └── Contact.tsx          # Form validation; delivery flow still needs implementation
 ├── lib/
 │   └── config.ts           # Centralized placeholder config
 └── styles/
@@ -105,7 +105,7 @@ docs/
 | Lazy Loading | `next/dynamic` with `ssr: false` for JellyfishCanvas | Non-blocking initial render |
 | Design Tokens | Tailwind v4 `@theme` with CSS custom properties (`--color-crimson`, `--color-bg`, etc.) | Single source of truth, runtime theming |
 | Fonts | Space Grotesk (display), DM Sans (body), JetBrains Mono (technical) | Editorial, readable, technical |
-| Contact Form | Client-side validation + `mailto:` fallback; success toast; no fake submission | Honest UX, no backend dependency |
+| Contact Form | Client-side validation; current handler simulates success without sending | Delivery is a launch blocker; tracked in issue #3 |
 
 ## Responsive Targets
 
@@ -170,7 +170,7 @@ export const config = {
 
 1. **TypeScript version:** Pinned to 6.1.3 for `eslint-config-next` compatibility (TS 7.x unsupported as of 2026-11).
 2. **WebGL fallback:** The 3D jellyfish gracefully degrades to SVG on WebGL failure, but GPU-dependent features (transmission, SSS) are unavailable in fallback.
-3. **Contact form:** Uses `mailto:` fallback; no backend endpoint implemented. Replace with API route when infrastructure exists. Honeypot field added for bot protection.
+3. **Contact form (launch blocker):** The current handler simulates a successful submission after a delay; it does not send email, open a mail draft, or call a backend. The honeypot is client-side only. Fix and truthful status handling are tracked in [issue #3](https://github.com/D8v1d777/RTSOLUTIONS-/issues/3). Do not launch until a verified recipient or approved backend is configured.
 4. **Social links:** All point to placeholder URLs. Update in `src/lib/config.ts` when accounts are created; flip `isPlaceholder: false`.
 5. **Environment lighting:** The Drei `Environment` component was removed because no cubemap assets were supplied. The scene currently uses procedural lighting; add a tracked HDR/EXR environment only if visual testing demonstrates a clear benefit.
 6. **Playwright on CI:** Firefox/WebKit require system dependencies (`libgtk-4`, etc.). Chromium is the primary CI target.
