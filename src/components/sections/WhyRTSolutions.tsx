@@ -156,10 +156,10 @@ export function WhyRTSolutions() {
             </div>
             <div>
               <h3 className="font-display text-xl lg:text-2xl font-medium text-white mb-2">
-                We\'re not for everyone
+                We're not for everyone
               </h3>
               <p className="text-text-secondary">
-                And we\'re honest about it. These aren't value judgments—just scope clarity.
+                And we're honest about it. These aren't value judgments—just scope clarity.
               </p>
             </div>
           </div>
