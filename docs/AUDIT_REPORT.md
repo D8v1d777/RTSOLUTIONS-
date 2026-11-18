@@ -3,7 +3,7 @@
 **Date:** 2026-11-18  
 **Auditor:** Independent Principal Frontend Engineer / Creative Director / 3D Web Graphics Specialist / QA Engineer  
 **Branch:** `claude/fable-5-2-build`  
-**Commit:** `2b1c37e`  
+**Application audit baseline:** `2b1c37e`; **verified fixes:** `9917380`  
 **Repository:** https://github.com/D8v1d777/RTSOLUTIONS-
 
 ---
@@ -43,7 +43,7 @@ The RTSOLUTIONS website implementation is **substantially complete and functiona
 - **Playwright 1.65** — Chromium-only CI (Firefox/WebKit need system deps)
 
 ### Reference Image
-**MISSING:** `docs/reference/visual-direction-reference.webp` (or `.jpg`) does not exist in repository. The CLAUDE.md and BUILD_BRIEF.md reference it as the visual north star. This should be added for future audits.
+**At the original audit snapshot:** the reference image was missing. **Resolved in repository follow-up commit `69a20dd`:** the original reference is now tracked at `docs/reference/visual-direction-reference.webp`. Future audits should inspect that committed file directly.
 
 ---
 
@@ -227,7 +227,7 @@ Used consistently across cards, form, footer. Backdrop-filter blur(20-24px) with
 
 | ID | Finding | File/Component | Recommendation |
 |----|---------|----------------|----------------|
-| **P3-1** | Add reference image to `docs/reference/` | Repository root | Commit the visual direction reference for future audits |
+| **P3-1** | Add reference image to `docs/reference/` | Repository root | Resolved in `69a20dd`; tracked at `docs/reference/visual-direction-reference.webp` |
 | **P3-2** | Preload Three.js chunks | `next.config.ts` or `layout.tsx` | `<link rel="preload" as="script" href="/_next/static/chunks/...">` for R3F/Three.js |
 | **P3-3** | Lighthouse CI integration | GitHub Actions | Run Lighthouse in CI on PR; gate on Performance >90, Accessibility >95 |
 | **P3-4** | Shared `Clock` for jellyfish components | `src/components/canvas/JellyfishCanvas.tsx` | Single `Clock` passed via context; cleaner, slightly more performant |
@@ -280,10 +280,10 @@ npx playwright test tests/capture-screenshots.spec.ts --project=chromium  # 4/4 
 1. **TS 6.1.3 pin** — Required for ESLint compatibility; upgrade when `typescript-eslint` supports TS 7
 2. **Contact form mailto fallback** — No backend; swap to API route when infrastructure exists
 3. **Social links placeholders** — Update `src/lib/config.ts` when accounts created; flip `isPlaceholder: false`
-4. **Environment cubemap** — If not added, `Environment` component should be removed to eliminate 404s
+4. **Environment lighting** — The `Environment` component was removed in `9917380`; procedural lighting is the current implementation. Add a tracked HDR/EXR asset only if visual testing justifies it.
 5. **Firefox/WebKit Playwright** — Need system deps (`libgtk-4`, etc.); Chromium primary CI target
 6. **No CSP headers** — Recommended for production deployment
-7. **Reference image missing** — Add to `docs/reference/` for audit continuity
+7. **Reference image** — Resolved in `69a20dd`; `docs/reference/visual-direction-reference.webp` is tracked.
 
 ---
 
@@ -296,8 +296,12 @@ npx playwright test tests/capture-screenshots.spec.ts --project=chromium  # 4/4 
 - [ ] Fresh screenshots at 4 viewports
 - [ ] Updated `README.md` if commands/status change
 - [ ] PR #2 updated with results
-- [ ] Reference image added to `docs/reference/`
+- [x] Reference image committed at `docs/reference/visual-direction-reference.webp` (follow-up `69a20dd`)
 
 ---
 
 **Audit Complete.** The implementation is strong — the fixes above are surgical and targeted. No redesign needed. The site genuinely reads as a premium creative technology studio.
+
+## Post-Audit Repository Reconciliation (2026-11-18)
+
+The audit commit `9917380` is the application-code verification point. A subsequent repository-hygiene commit `69a20dd` restores the original visual reference at `docs/reference/visual-direction-reference.webp` and removes all 13 tracked `.omc/` session/replay artifacts from the PR branch. This follow-up changes no application source; the build/typecheck/lint/E2E results above refer to the audited application commit `9917380`. The `.gitignore` still needs explicit `.omc` patterns so those files are not reintroduced.
