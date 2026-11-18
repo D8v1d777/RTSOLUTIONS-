@@ -74,7 +74,7 @@ export function Contact() {
     await new Promise((resolve) => setTimeout(resolve, 300));
 
     // Use single source of truth: config.isPlaceholder
-    if (config.isPlaceholder) {
+    if (config.isPlaceholder || !config.contact.verifiedEmail) {
       setFormState('placeholder-warning');
       return;
     }
@@ -138,11 +138,11 @@ export function Contact() {
             </h2>
             <p className="text-lg text-text-secondary leading-relaxed mb-10 max-w-xl">
               No sales scripts. No middlemen. You'll talk directly with the people who'd be doing the work.
-              Share what you're building and we'll reply within {config.contact.responseTime}.
+              Share what you're building. Your details will stay in this form until verified contact information is configured.
             </p>
 
-            {/* Contact Methods */}
-            <div className="space-y-6">
+            {/* Verified contact method — never expose placeholder addresses */}
+            { !config.isPlaceholder && config.contact.verifiedEmail ? (
               <a
                 href={`mailto:${config.contact.verifiedEmail}`}
                 className="group flex items-center gap-4 p-5 glass-panel-strong rounded-xl hover:border-crimson-dim/50 transition-all duration-300"
@@ -152,32 +152,20 @@ export function Contact() {
                 </div>
                 <div>
                   <p className="font-mono text-xs text-text-dim uppercase tracking-wider">Email</p>
-                  <p className="text-text-secondary group-hover:text-white transition-colors">
-                    {config.contact.verifiedEmail}
-                  </p>
+                  <p className="text-text-secondary group-hover:text-white transition-colors">{config.contact.verifiedEmail}</p>
                 </div>
               </a>
-
-              <div className="flex items-center gap-4 p-5 glass-panel-strong rounded-xl">
+            ) : (
+              <div className="flex items-center gap-4 p-5 glass-panel-strong rounded-xl" role="status">
                 <div className="w-12 h-12 glass-panel rounded-xl flex items-center justify-center flex-shrink-0 text-text-dim">
-                  <MessageSquare className="w-6 h-6" aria-hidden="true" />
+                  <Mail className="w-6 h-6" aria-hidden="true" />
                 </div>
                 <div>
-                  <p className="font-mono text-xs text-text-dim uppercase tracking-wider">Response Time</p>
-                  <p className="text-text-secondary">{config.contact.responseTime}</p>
+                  <p className="font-mono text-xs text-text-dim uppercase tracking-wider">Email</p>
+                  <p className="text-text-secondary">Verified contact details are being configured.</p>
                 </div>
               </div>
-
-              <div className="flex items-center gap-4 p-5 glass-panel-strong rounded-xl">
-                <div className="w-12 h-12 glass-panel rounded-xl flex items-center justify-center flex-shrink-0 text-text-dim">
-                  <ExternalLink className="w-6 h-6" aria-hidden="true" />
-                </div>
-                <div>
-                  <p className="font-mono text-xs text-text-dim uppercase tracking-wider">Work Hours</p>
-                  <p className="text-text-secondary">{config.contact.businessHours}</p>
-                </div>
-              </div>
-            </div>
+            )}
 
             {/* Placeholder notice */}
             {config.isPlaceholder && (
@@ -221,13 +209,10 @@ export function Contact() {
                         Contact details are placeholders
                       </h3>
                       <p className="text-text-secondary mb-4">
-                        The contact configuration is not yet verified. Please update
-                        <code className="bg-white/5 px-2 py-0.5 rounded text-crimson-glow font-mono text-sm">
-                          src/lib/config.ts
-                        </code> with a verified email address and set <code className="bg-white/5 px-2 py-0.5 rounded text-crimson-glow font-mono text-sm">isPlaceholder: false</code>.
+                        No verified contact address is configured yet. Your message has not been sent, and no placeholder address will be shown.
                       </p>
                       <p className="text-text-secondary text-sm mb-6">
-                        Your form data has been preserved below. You can copy it into your email client.
+                        Your entries remain in this form. You can return later when verified contact details are available.
                       </p>
                       <button
                         onClick={dismissNotice}
