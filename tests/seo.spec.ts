@@ -96,6 +96,27 @@ test.describe('Independent quality pass', () => {
     expect(whyCopy).not.toContain("\\'");
   });
 
+  test('document has no horizontal overflow at the four target viewports', async ({ page }) => {
+    for (const viewport of [
+      { width: 390, height: 844 },
+      { width: 768, height: 1024 },
+      { width: 1440, height: 900 },
+      { width: 1920, height: 1080 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.goto('/');
+      const dimensions = await page.evaluate(() => ({
+        innerWidth: window.innerWidth,
+        scrollWidth: document.documentElement.scrollWidth,
+      }));
+
+      expect(
+        dimensions.scrollWidth,
+        `Horizontal overflow at ${viewport.width}x${viewport.height}`
+      ).toBeLessThanOrEqual(dimensions.innerWidth);
+    }
+  });
+
   test('mobile menu opens, navigates, and closes', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
