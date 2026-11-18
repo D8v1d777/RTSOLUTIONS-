@@ -257,9 +257,10 @@ test.describe('Contact Form - E2E Tests', () => {
     await expect(page.locator('#contact').locator('text=Placeholder contact details — replace with verified info in config').first()).toBeVisible();
   });
 
-  test('email link in info column uses verifiedEmail from config', async ({ page }) => {
-    const emailLink = page.locator('#contact').locator('a[href^="mailto:"]').first();
-    await expect(emailLink).toHaveAttribute('href', 'mailto:hello@rtsolutions.dev');
-    await expect(emailLink).toContainText('hello@rtsolutions.dev');
+  test('placeholder mode never exposes unverified email links or addresses', async ({ page }) => {
+    await expect(page.locator('#contact a[href^="mailto:"]')).toHaveCount(0);
+    await expect(page.locator('footer a[href^="mailto:"]')).toHaveCount(0);
+    await expect(page.getByText('hello@rtsolutions.dev')).toHaveCount(0);
+    await expect(page.getByText('Verified contact details are being configured.')).toBeVisible();
   });
 });
