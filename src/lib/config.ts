@@ -75,6 +75,15 @@ export const config = {
     { value: '6+', label: '6+ months' },
     { value: 'flexible', label: 'Flexible' },
   ],
+
+  // Contact Configuration
+  contact: {
+    verifiedEmail: 'hello@rtsolutions.dev',
+    isPlaceholder: true,
+    responseTime: '1–2 business days',
+    businessHours: 'Mon–Fri, 9am–6pm CET',
+    privacyPolicyUrl: '',
+  } as const,
 } as const;
 
 export type Config = typeof config;

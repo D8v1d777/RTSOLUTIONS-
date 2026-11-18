@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Mail, MessageSquare, ExternalLink, Check, Loader2 } from 'lucide-react';
+import { Mail, MessageSquare, ExternalLink, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import { config } from '@/lib/config';
 
 export function Contact() {
-  const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [formState, setFormState] = useState<'idle' | 'submitting' | 'mailto-sent' | 'placeholder-warning'>('idle');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -14,7 +14,7 @@ export function Contact() {
     budget: '',
     timeline: '',
     message: '',
-    // Honeypot field - bots fill this, humans don't see it
+    // Honeypot field - bots fill this, humans don't see it (client-side filtering only)
     website: '',
   });
   const [errors, setErrors] = useState<Partial<typeof formData>>({});
@@ -27,14 +27,29 @@ export function Contact() {
     if (!formData.projectType) newErrors.projectType = 'Select a project type';
     if (!formData.message.trim()) newErrors.message = 'Message is required';
     else if (formData.message.trim().length < 50) newErrors.message = 'Please share more details (min 50 chars)';
-    // Honeypot check - if filled, likely a bot
+    // Honeypot check - if filled, likely a bot (client-side filtering only, not server-side protection)
     if (formData.website.trim()) {
-      // Silently reject but don't show error to user
       setErrors(newErrors);
       return false;
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const buildMailtoUrl = (data: typeof formData) => {
+    const subject = encodeURIComponent(`Project Inquiry: ${data.projectType}`);
+    const bodyLines = [
+      `Name: ${data.name}`,
+      `Email: ${data.email}`,
+      `Project Type: ${data.projectType}`,
+      `Budget Range: ${data.budget || 'Not specified'}`,
+      `Timeline: ${data.timeline || 'Not specified'}`,
+      '',
+      'Project Details:',
+      data.message,
+    ];
+    const body = encodeURIComponent(bodyLines.join('\n'));
+    return `mailto:${config.contact.verifiedEmail}?subject=${subject}&body=${body}`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,15 +58,20 @@ export function Contact() {
 
     setFormState('submitting');
 
-    // Simulate form submission - replace with actual endpoint
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // Brief delay to show submitting state
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
-    // In production, replace with actual form handler:
-    // const response = await fetch('/api/contact', { method: 'POST', body: JSON.stringify(formData) });
-    // if (response.ok) setFormState('success'); else setFormState('error');
+    if (config.contact.isPlaceholder) {
+      setFormState('placeholder-warning');
+      return;
+    }
 
-    setFormState('success');
-    setFormData({ name: '', email: '', projectType: '', budget: '', timeline: '', message: '', website: '' });
+    // Open mailto with encoded form data
+    const mailtoUrl = buildMailtoUrl(formData);
+    window.location.href = mailtoUrl;
+
+    setFormState('mailto-sent');
+    // Do NOT clear form data - user may want to adjust and resend
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -60,7 +80,13 @@ export function Contact() {
     if (errors[name as keyof typeof errors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
+    // Reset form state when user starts editing again
+    if (formState === 'mailto-sent' || formState === 'placeholder-warning') {
+      setFormState('idle');
+    }
   };
+
+  const dismissNotice = () => setFormState('idle');
 
   return (
     <section
@@ -93,19 +119,19 @@ export function Contact() {
               id="contact-heading"
               className="font-display text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight text-white leading-[1.1] mb-6"
             >
-              Let\'s talk about
+              Let's talk about
               <br />
               <span className="text-crimson-glow">your project.</span>
             </h2>
             <p className="text-lg text-text-secondary leading-relaxed mb-10 max-w-xl">
-              No sales scripts. No middlemen. You\'ll talk directly with the people who\'d be doing the work.
-              Share what you\'re building and we\'ll reply within 1–2 business days.
+              No sales scripts. No middlemen. You'll talk directly with the people who'd be doing the work.
+              Share what you're building and we'll reply within {config.contact.responseTime}.
             </p>
 
             {/* Contact Methods */}
             <div className="space-y-6">
               <a
-                href={`mailto:${config.email}`}
+                href={`mailto:${config.contact.verifiedEmail}`}
                 className="group flex items-center gap-4 p-5 glass-panel-strong rounded-xl hover:border-crimson-dim/50 transition-all duration-300"
               >
                 <div className="w-12 h-12 glass-panel-crimson rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
@@ -114,7 +140,7 @@ export function Contact() {
                 <div>
                   <p className="font-mono text-xs text-text-dim uppercase tracking-wider">Email</p>
                   <p className="text-text-secondary group-hover:text-white transition-colors">
-                    {config.email}
+                    {config.contact.verifiedEmail}
                   </p>
                 </div>
               </a>
@@ -125,7 +151,7 @@ export function Contact() {
                 </div>
                 <div>
                   <p className="font-mono text-xs text-text-dim uppercase tracking-wider">Response Time</p>
-                  <p className="text-text-secondary">1–2 business days</p>
+                  <p className="text-text-secondary">{config.contact.responseTime}</p>
                 </div>
               </div>
 
@@ -135,7 +161,7 @@ export function Contact() {
                 </div>
                 <div>
                   <p className="font-mono text-xs text-text-dim uppercase tracking-wider">Work Hours</p>
-                  <p className="text-text-secondary">Mon–Fri, 9am–6pm CET</p>
+                  <p className="text-text-secondary">{config.contact.businessHours}</p>
                 </div>
               </div>
             </div>
@@ -164,31 +190,85 @@ export function Contact() {
             transition={{ duration: 0.8, ease: [0.19, 1, 0.22, 1], delay: 0.1 }}
           >
             <AnimatePresence mode="wait">
-              {formState === 'success' ? (
+              {/* Placeholder Warning State */}
+              {formState === 'placeholder-warning' && (
                 <motion.div
-                  key="success"
-                  className="glass-panel-strong rounded-2xl p-8 lg:p-10 text-center"
+                  key="placeholder-warning"
+                  className="glass-panel-strong rounded-2xl p-8 lg:p-10"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                 >
-                  <div className="w-16 h-16 bg-crimson/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Check className="w-8 h-8 text-crimson-glow" aria-hidden="true" />
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-amber/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <AlertCircle className="w-6 h-6 text-amber" aria-hidden="true" />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <h3 className="font-display text-xl font-medium text-white mb-2">
+                        Contact details are placeholders
+                      </h3>
+                      <p className="text-text-secondary mb-4">
+                        The email address in config is not yet verified. Please email us directly at
+                        <code className="bg-white/5 px-2 py-0.5 rounded text-crimson-glow font-mono text-sm">
+                          {config.contact.verifiedEmail}
+                        </code>
+                        or update <code className="bg-white/5 px-2 py-0.5 rounded text-crimson-glow font-mono text-sm">
+                          src/lib/config.ts
+                        </code> with a verified address and set <code className="bg-white/5 px-2 py-0.5 rounded text-crimson-glow font-mono text-sm">isPlaceholder: false</code>.
+                      </p>
+                      <p className="text-text-secondary text-sm mb-6">
+                        Your form data has been preserved below. You can copy it into your email client.
+                      </p>
+                      <button
+                        onClick={dismissNotice}
+                        className="px-4 py-2 text-sm font-medium text-white bg-crimson hover:bg-crimson-glow border border-crimson-dim rounded-md transition-all duration-200"
+                      >
+                        Dismiss
+                      </button>
+                    </div>
                   </div>
-                  <h3 className="font-display text-2xl font-medium text-white mb-3">
-                    Message sent
-                  </h3>
-                  <p className="text-text-secondary mb-6 max-w-sm mx-auto">
-                    Thanks for reaching out. We\'ll review your project details and get back within 1–2 business days.
-                  </p>
-                  <button
-                    onClick={() => setFormState('idle')}
-                    className="px-6 py-3 text-sm font-medium text-white bg-crimson hover:bg-crimson-glow border border-crimson-dim rounded-md transition-all duration-200"
-                  >
-                    Send another message
-                  </button>
                 </motion.div>
-              ) : (
+              )}
+
+              {/* Mailto Sent State */}
+              {formState === 'mailto-sent' && (
+                <motion.div
+                  key="mailto-sent"
+                  className="glass-panel-strong rounded-2xl p-8 lg:p-10"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-crimson/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="w-6 h-6 text-crimson-glow" aria-hidden="true" />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <h3 className="font-display text-xl font-medium text-white mb-2">
+                        Email draft opened
+                      </h3>
+                      <p className="text-text-secondary mb-4">
+                        Your default mail client should have opened with a pre-filled draft containing your project details.
+                      </p>
+                      <p className="text-text-secondary text-sm mb-6">
+                        <strong>Please review and send the email yourself.</strong> We do not receive your message until you click Send in your mail client.
+                      </p>
+                      <p className="text-text-dim text-sm mb-6">
+                        Your form data remains below in case you need to adjust and resend.
+                      </p>
+                      <button
+                        onClick={dismissNotice}
+                        className="px-4 py-2 text-sm font-medium text-white bg-crimson hover:bg-crimson-glow border border-crimson-dim rounded-md transition-all duration-200"
+                      >
+                        Continue
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Form */}
+              {(formState === 'idle' || formState === 'submitting' || formState === 'mailto-sent') && (
                 <motion.form
                   key="form"
                   onSubmit={handleSubmit}
@@ -197,7 +277,7 @@ export function Contact() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                 >
-                  {/* Honeypot field - hidden from users, filled by bots */}
+                  {/* Honeypot field - hidden from users, filled by bots (client-side filtering only) */}
                   <input
                     type="text"
                     name="website"
@@ -402,9 +482,8 @@ export function Contact() {
                     {formState === 'submitting' ? (
                       <>
                         <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
-                        Sending...
-                      </>
-                    ) : (
+                        Preparing...
+                      </>) : (
                       <>
                         Send Message
                         <ExternalLink className="w-5 h-5" aria-hidden="true" />
@@ -413,11 +492,18 @@ export function Contact() {
                   </button>
 
                   <p className="text-xs text-text-dim text-center sm:text-left">
-                    By submitting, you agree we may store this information to respond to your inquiry. No marketing lists. No third parties.
-                    <br />
-                    <a href="#" className="text-crimson-glow hover:text-scarlet underline underline-offset-2">
-                      Privacy notice
-                    </a>
+                    This form opens a mailto: draft in your email client. No data is stored on our servers.
+                    {config.contact.privacyPolicyUrl && (
+                      <>
+                        <br />
+                        <a
+                          href={config.contact.privacyPolicyUrl}
+                          className="text-crimson-glow hover:text-scarlet underline underline-offset-2"
+                        >
+                          Privacy notice
+                        </a>
+                      </>
+                    )}
                   </p>
                 </motion.form>
               )}
