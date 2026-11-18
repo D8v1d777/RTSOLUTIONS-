@@ -104,7 +104,9 @@ test.describe('Independent quality pass', () => {
 
     const whyCopy = await page.locator('#why').innerText();
     expect(whyCopy).toContain("We're not the right fit for everyone. That's intentional.");
-    expect(whyCopy).not.toContain("\\'");
+
+    const renderedCopy = await page.locator('main').innerText();
+    expect(renderedCopy).not.toContain("\\'");
   });
 
   test('mobile menu opens, navigates, and closes', async ({ page }) => {
