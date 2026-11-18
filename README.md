@@ -9,7 +9,7 @@ An independent software and digital product studio. We build custom websites, we
 **Manual preview services:** [`rtsolutions-preview-live`](https://rtsolutions-preview-live.onrender.com) and [`rtsolutions-preview`](https://rtsolutions-preview.onrender.com) use the same branch but have auto-deploy disabled; both were last inspected at commit `2a001db51e3c4bafd11335adc23d407da8d7c2ed`.  
 **Independent quality PR:** [#4](https://github.com/D8v1d777/RTSOLUTIONS-/pull/4) targets the implementation branch and remains separate from the visual rebuild.  
 **Contact/social:** Public contact and social details are intentionally unpublished until verified. The form has no backend; it creates a mailto draft only after a verified recipient is configured.  
-**Verification:** CI run [#45](https://github.com/D8v1d777/RTSOLUTIONS-/actions/runs/44407284465) passed 49/49 Chromium tests and produced the four reviewed viewport screenshots. Run [#46](https://github.com/D8v1d777/RTSOLUTIONS-/actions/runs/44409796316) passed lint, typecheck, and production build; its one Playwright failure was a stale assertion for the placeholder wording that this branch intentionally replaced. The assertion is corrected in the current head and awaits run #47.
+**Verification:** CI run [#47](https://github.com/D8v1d777/RTSOLUTIONS-/actions/runs/44410477454) passed lint, typecheck, production build, and 50/50 Chromium Playwright tests. Run [#45](https://github.com/D8v1d777/RTSOLUTIONS-/actions/runs/44407284465) produced the four reviewed viewport screenshots.
 
 ## Quick Start
 
@@ -162,10 +162,10 @@ export const config = {
 
 | Check | Command | Status |
 |-------|---------|--------|
-| Production build | `npm run build` | CI run #46 passed |
-| TypeScript strict | `npm run typecheck` | CI run #46 passed |
-| Lint | `npm run lint` | CI run #46 passed |
-| E2E tests (Chromium) | `npm run test -- --project=chromium` | Run #45: 49/49; run #46: 49/50 because one contact-copy assertion was stale; corrected in current head, run #47 pending |
+| Production build | `npm run build` | CI run #47 passed |
+| TypeScript strict | `npm run typecheck` | CI run #47 passed |
+| Lint | `npm run lint` | CI run #47 passed |
+| E2E tests (Chromium) | `npm run test -- --project=chromium` | Run #47: 50/50 passed |
 | Viewport screenshots | `npm run test -- --project=chromium` | Four captures uploaded in [CI artifact #45](https://github.com/D8v1d777/RTSOLUTIONS-/actions/runs/44407284465) |
 | Lighthouse | `npm run lighthouse` | Not run in this quality pass |
 | axe-core | `@axe-core/playwright` | Not installed or run; no automated axe result claimed |
