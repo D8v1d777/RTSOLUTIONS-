@@ -9,7 +9,6 @@ export const config = {
     'An independent software and digital product studio building custom websites, web applications, and desktop applications. Our differentiator is creative frontend craft.',
 
   // Contact Information (PLACEHOLDERS - replace with verified details)
-  email: '',
   phone: '', // Optional
   address: '', // Optional
   isPlaceholder: true,
