@@ -51,3 +51,11 @@ Thumbs.db
 # Logs
 logs
 *.log
+# Agent orchestration/session artifacts — never commit local state
+.omc/state/
+.omc/notepad.md
+.omc/project-memory.json
+.omc/logs/
+.omc/artifacts/
+.omc/handoffs/
+.omc/ultragoal/
