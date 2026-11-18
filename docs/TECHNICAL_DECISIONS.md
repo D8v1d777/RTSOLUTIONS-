@@ -411,3 +411,13 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jet
 | `docs/TECHNICAL_DECISIONS.md` | This file |
 | `docs/QA_REPORT.md` | QA evidence |
 | `docs/screenshots/*.png` | 4 viewport captures |
+
+## 14. Lint Command on Next.js 16
+
+### Decision: Use the ESLint CLI directly
+**Date:** 2026-11-18  
+**Status:** Configured; fresh npm-script verification pending
+
+Next.js 16 removed the `next lint` command. The package script was migrated in commit `0eff927` from `next lint` to `eslint src/ --ext .ts,.tsx`. The audit's direct ESLint CLI invocation reported zero errors and one pre-existing unused-variable warning; the updated `npm run lint` script must be run once in the project environment before merge.
+
+**Official reference:** https://nextjs.org/docs/app/guides/upgrading/version-16
