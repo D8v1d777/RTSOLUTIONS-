@@ -101,7 +101,7 @@ export function WhyRTSolutions() {
             <span className="text-crimson-glow">One standard.</span>
           </h2>
           <p className="mt-6 text-lg text-text-secondary leading-relaxed">
-            We\'re not the right fit for everyone. That\'s intentional.
+            We're not the right fit for everyone. That's intentional.
           </p>
         </motion.div>
 
