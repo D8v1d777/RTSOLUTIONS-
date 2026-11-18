@@ -48,6 +48,7 @@ export const buildMailtoUrl = (data: FormData, verifiedEmail: string): string =>
 };
 
 export function Contact() {
+  const hasVerifiedRecipient = !config.isPlaceholder && Boolean(config.contact.verifiedEmail);
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'mailto-sent' | 'placeholder-warning'>('idle');
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -87,7 +88,7 @@ export function Contact() {
     await new Promise((resolve) => setTimeout(resolve, 300));
 
     // Use single source of truth: config.isPlaceholder
-    if (config.isPlaceholder || !config.contact.verifiedEmail) {
+    if (!hasVerifiedRecipient) {
       setFormState('placeholder-warning');
       return;
     }
@@ -155,7 +156,7 @@ export function Contact() {
             </p>
 
             {/* Verified contact method — never expose placeholder addresses */}
-            { !config.isPlaceholder && config.contact.verifiedEmail ? (
+            { hasVerifiedRecipient ? (
               <a
                 href={`mailto:${config.contact.verifiedEmail}`}
                 className="group flex items-center gap-4 p-5 glass-panel-strong rounded-xl hover:border-crimson-dim/50 transition-all duration-300"
@@ -175,7 +176,7 @@ export function Contact() {
                 </div>
                 <div>
                   <p className="font-mono text-xs text-text-dim uppercase tracking-wider">Email</p>
-                  <p className="text-text-secondary">Verified contact details are being configured.</p>
+                  <p className="text-text-secondary">No verified contact address is published yet.</p>
                 </div>
               </div>
             )}
@@ -501,14 +502,14 @@ export function Contact() {
                         Preparing...
                       </>) : (
                       <>
-                        Send Message
-                        <ExternalLink className="w-5 h-5" aria-hidden="true" />
+                        {hasVerifiedRecipient ? 'Open email draft' : 'Review contact status'}
+                        {hasVerifiedRecipient && <ExternalLink className="w-5 h-5" aria-hidden="true" />}
                       </>
                     )}
                   </button>
 
                   <p className="text-xs text-text-dim text-center sm:text-left">
-                    {config.isPlaceholder || !config.contact.verifiedEmail
+                    {!hasVerifiedRecipient
                       ? 'No verified recipient is configured. Your draft stays in this open page only; leaving or refreshing clears it. Nothing is sent or stored by RTSOLUTIONS.'
                       : 'This form prepares a mailto: draft in your email client. You must review and send it yourself; no message is transmitted to RTSOLUTIONS until you do.'}
                     {config.contact.privacyPolicyUrl && (
