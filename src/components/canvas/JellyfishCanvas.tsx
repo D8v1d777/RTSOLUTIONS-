@@ -159,8 +159,6 @@ function JellyfishBell({ reducedMotion }: { reducedMotion: boolean }) {
         material={rimMaterial}
         rotation={[Math.PI / 2, 0, 0]}
       />
-        }
-      />
       <pointLight position={[0, -0.12, 0.15]} color="#ff254e" intensity={1.35} distance={3.5} />
     </group>
   );
@@ -260,6 +258,7 @@ function TentacleField({ reducedMotion }: { reducedMotion: boolean }) {
 }
 
 function FloatingParticles({ reducedMotion }: { reducedMotion: boolean }) {
+  const pointsRef = useRef<Points>(null);
   const geometry = useMemo(() => {
     const positions = new Float32Array(110 * 3);
     for (let i = 0; i < 110; i++) {
@@ -288,18 +287,19 @@ function FloatingParticles({ reducedMotion }: { reducedMotion: boolean }) {
   );
 
   useFrame(({ clock }, delta) => {
-    if (reducedMotion) return;
-    const positions = geometry.attributes.position.array as Float32Array;
+    if (reducedMotion || !pointsRef.current) return;
+    const liveGeometry = pointsRef.current.geometry as BufferGeometry;
+    const positions = liveGeometry.attributes.position.array as Float32Array;
     for (let i = 0; i < 110; i++) {
       const offset = i * 3;
       positions[offset + 1] += delta * (0.035 + (i % 5) * 0.009);
       positions[offset] += Math.sin(clock.elapsedTime * 0.24 + i) * delta * 0.006;
       if (positions[offset + 1] > 1.7) positions[offset + 1] = -1.6;
     }
-    geometry.attributes.position.needsUpdate = true;
+    liveGeometry.attributes.position.needsUpdate = true;
   });
 
-  return <points geometry={geometry} material={material} />;
+  return <points ref={pointsRef} geometry={geometry} material={material} />;
 }
 
 function JellyfishScene({ reducedMotion }: { reducedMotion: boolean }) {
