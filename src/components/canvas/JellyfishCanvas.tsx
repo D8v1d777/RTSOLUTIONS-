@@ -164,6 +164,26 @@ function JellyfishBell({ reducedMotion }: { reducedMotion: boolean }) {
   );
 }
 
+function setStrandPoint(
+  target: Vector3,
+  progress: number,
+  angle: number,
+  phase: number,
+  time: number,
+  length: number,
+  rootRadius: number,
+  isOralArm: boolean,
+  reducedMotion: boolean,
+) {
+  const wave = reducedMotion ? 0 : Math.sin(time + phase + progress * 3.3) * progress * (isOralArm ? 0.105 : 0.22);
+  const curl = reducedMotion ? 0 : Math.cos(time * 0.72 + phase + progress * 2.4) * progress * (isOralArm ? 0.055 : 0.12);
+  const radius = rootRadius + progress * 0.075;
+  target.set(
+    Math.cos(angle) * radius - Math.sin(angle) * wave + Math.cos(angle) * curl * 0.15,
+    0.25 - progress * length + (reducedMotion ? 0 : Math.sin(time * 0.65 + phase + progress * 2) * progress * 0.035),
+    Math.sin(angle) * radius + Math.cos(angle) * wave + Math.sin(angle) * curl * 0.15,
+  );
+}
 function TentacleField({ reducedMotion }: { reducedMotion: boolean }) {
   const meshRef = useRef<InstancedMesh>(null);
   const geometry = useMemo(() => new CapsuleGeometry(0.013, 0.12, 4, 7), []);
@@ -214,23 +234,8 @@ function TentacleField({ reducedMotion }: { reducedMotion: boolean }) {
         const u = segment / (SEGMENT_COUNT - 1);
         const nextU = (segment + 1) / (SEGMENT_COUNT - 1);
 
-        const pointAt = (target: Vector3, progress: number) => {
-          const wave = reducedMotion
-            ? 0
-            : Math.sin(time + phase + progress * 3.3) * progress * (isOralArm ? 0.105 : 0.22);
-          const curl = reducedMotion
-            ? 0
-            : Math.cos(time * 0.72 + phase + progress * 2.4) * progress * (isOralArm ? 0.055 : 0.12);
-          const radius = rootRadius + progress * 0.075;
-          target.set(
-            Math.cos(angle) * radius - Math.sin(angle) * wave + Math.cos(angle) * curl * 0.15,
-            0.25 - progress * length + (reducedMotion ? 0 : Math.sin(time * 0.65 + phase + progress * 2) * progress * 0.035),
-            Math.sin(angle) * radius + Math.cos(angle) * wave + Math.sin(angle) * curl * 0.15,
-          );
-        };
-
-        pointAt(helpers.from, u);
-        pointAt(helpers.to, nextU);
+        setStrandPoint(helpers.from, u, angle, phase, time, length, rootRadius, isOralArm, reducedMotion);
+        setStrandPoint(helpers.to, nextU, angle, phase, time, length, rootRadius, isOralArm, reducedMotion);
         helpers.direction.subVectors(helpers.to, helpers.from);
         const segmentLength = helpers.direction.length();
         helpers.direction.normalize();
