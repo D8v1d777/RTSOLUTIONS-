@@ -134,7 +134,7 @@ export function Process() {
             <span className="text-crimson-glow">No shortcuts.</span>
           </h2>
           <p className="mt-6 text-lg text-text-secondary leading-relaxed">
-            The sequence stays clear; timing and deliverables are agreed to the scope.
+            Timing and deliverables are agreed once the scope is clear.
           </p>
         </motion.div>
 
