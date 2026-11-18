@@ -13,7 +13,7 @@
 |-------|--------|----------|
 | Production Build | ✅ Pass | `npm run build` — 0 TypeScript errors, 4 static pages generated, **no metadataBase warning** |
 | TypeScript Strict | ✅ Pass | `npm run typecheck` — 0 errors |
-| Lint | ✅ Pass | `eslint-config-next` with TS 6.1.3 — 0 errors, 1 warning (unused var) |
+| Lint | ⚠️ CLI check passed; npm alias updated afterward | Direct ESLint CLI check: 0 errors, 1 warning. `npm run lint` now calls the same ESLint CLI family; rerun the npm script before merge. |
 | E2E Tests (Chromium) | ✅ 19/19 Pass | Playwright: sections, nav, CTAs, canvas/fallback, footer, form, a11y, responsive + 4 viewport screenshots |
 | Viewport Screenshots | ✅ 4/4 Captured | Fresh captures at 390×844, 768×1024, 1440×900, 1920×1080 |
 | Lighthouse CI | ⏳ Pending | Requires running dev server |
@@ -58,13 +58,13 @@ tsc --noEmit
 
 **Result:** ✅ TypeScript strict mode passes.
 
-### Command: `npm run lint` (via `npx eslint src/ --ext .ts,.tsx --quiet`)
+### Audit command: `npx eslint src/ --ext .ts,.tsx --quiet`
 ```
 []
 Exit code: 0
 ```
 
-**Result:** ✅ ESLint passes (0 errors). One warning in JellyfishCanvas.tsx for unused variable (pre-existing, non-blocking).
+**Result:** ✅ The direct ESLint CLI check passed with 0 errors and one pre-existing unused-variable warning in `JellyfishCanvas.tsx`. After that audit run, `package.json` was corrected in `0eff927` so `npm run lint` invokes `eslint src/ --ext .ts,.tsx`. The npm alias itself still needs a fresh run before merge.
 
 ---
 
@@ -255,7 +255,7 @@ All tests configured with `screenshot: 'only-on-failure'`, `video: 'retain-on-fa
 # Full verification suite
 npm run build           # Production build + typecheck (clean, no warnings)
 npm run typecheck       # TypeScript only (0 errors)
-npx eslint src/ --ext .ts,.tsx --quiet  # ESLint (0 errors)
+npm run lint            # ESLint CLI (script migrated from removed `next lint`; rerun before merge)
 npm run test            # Playwright E2E (Chromium) — 19/19 pass
 npx playwright test tests/capture-screenshots.spec.ts --project=chromium  # 4/4 screenshots
 npm run lighthouse      # Lighthouse CI (needs `npm run dev` running)
