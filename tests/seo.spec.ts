@@ -47,6 +47,7 @@ test.describe('Independent quality pass', () => {
     const footer = page.locator('footer');
     await expect(footer.locator('a[href="#"]')).toHaveCount(0);
     await expect(footer.locator('a[aria-disabled="true"]')).toHaveCount(0);
+    await expect(footer).toContainText('Contact details are intentionally unpublished until verified.');
   });
 
   test('every same-page link points to an existing target', async ({ page }) => {
@@ -86,7 +87,7 @@ test.describe('Independent quality pass', () => {
 
   test('public copy avoids unverified service-level promises', async ({ page }) => {
     await page.goto('/');
-    const copy = `${await page.locator('#process').innerText()} ${await page.locator('#why').innerText()}`;
+    const copy = `${await page.locator('#process').innerText()} ${await page.locator('#why').innerText()} ${await page.locator('#contact').innerText()}`;
 
     for (const claim of [
       '80%+',
@@ -96,6 +97,9 @@ test.describe('Independent quality pass', () => {
       '30-day support window',
       'Direct Slack/email access',
       'Principal-level involvement',
+      'No sales scripts.',
+      'No middlemen.',
+      "talk directly with the people",
     ]) {
       expect(copy).not.toContain(claim);
     }
@@ -121,6 +125,22 @@ test.describe('Independent quality pass', () => {
       await expect(page.locator('.nav-pill')).toBeVisible();
       await expect(toggle).toBeHidden();
     }
+  });
+
+  test('mobile menu closes on Escape and restores focus to its trigger', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+
+    const toggle = page.locator('button[aria-controls="mobile-menu"]');
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+
+    await page.locator('#mobile-menu').getByRole('link', { name: 'Studio' }).focus();
+    await page.keyboard.press('Escape');
+
+    await expect(page.locator('#mobile-menu')).toHaveCount(0);
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(toggle).toBeFocused();
   });
 
   test('mobile menu opens, navigates, and closes', async ({ page }) => {

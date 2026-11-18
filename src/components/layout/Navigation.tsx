@@ -25,6 +25,19 @@ export function Navigation() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setIsMobileMenuOpen(false);
+      document.querySelector<HTMLButtonElement>('[aria-controls="mobile-menu"]')?.focus();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isMobileMenuOpen]);
+
   return (
     <header className={`site-header fixed inset-x-0 top-0 z-50 transition-all duration-300 ${isScrolled ? 'site-header--scrolled' : ''}`}>
       <nav className="site-nav container" aria-label="Main navigation">

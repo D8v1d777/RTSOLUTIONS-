@@ -49,7 +49,7 @@ export function Footer() {
             </p>
             {config.isPlaceholder && (
               <p className="mt-4 text-xs text-text-dim font-mono">
-                Placeholder contact details — replace with verified info
+                Contact details are intentionally unpublished until verified.
               </p>
             )}
           </div>

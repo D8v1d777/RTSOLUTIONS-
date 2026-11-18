@@ -151,8 +151,7 @@ export function Contact() {
               <span className="text-crimson-glow">your project.</span>
             </h2>
             <p className="text-lg text-text-secondary leading-relaxed mb-10 max-w-xl">
-              No sales scripts. No middlemen. You'll talk directly with the people who'd be doing the work.
-              Share what you're building. If no verified recipient is configured, nothing is sent or stored; your draft remains only in this open page.
+              Tell us what you're trying to make, the constraints around it, and what a useful outcome would look like. If no verified recipient is configured, nothing is sent or stored; your draft remains only in this open page.
             </p>
 
             {/* Verified contact method — never expose placeholder addresses */}
@@ -191,7 +190,7 @@ export function Contact() {
               >
                 <p className="font-mono text-xs text-crimson-glow flex items-center gap-2">
                   <ExternalLink className="w-3 h-3" aria-hidden="true" />
-                  Placeholder contact details — replace with verified info in config
+                  Contact details are intentionally unpublished until verified.
                 </p>
               </motion.div>
             )}

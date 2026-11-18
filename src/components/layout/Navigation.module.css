@@ -1,3 +1,4 @@
+/* The global toggle rule sets display:grid, so this higher-specificity rule must win over md:hidden. */
 @media (min-width: 768px) {
   .mobileOnly.mobileOnly {
     display: none;

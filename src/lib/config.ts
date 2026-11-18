@@ -28,7 +28,6 @@ export const config = {
 
   // SEO
   ogImage: '/og-image.svg',
-  twitterHandle: '@rtsolutions',
 
   // Services
   services: [
