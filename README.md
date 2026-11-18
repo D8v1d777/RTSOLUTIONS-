@@ -5,7 +5,7 @@ An independent software and digital product studio. We build custom websites, we
 ## Project Status
 
 **Current branch:** `claude/fable-5-2-build`  
-**Preview status:** Release candidate deployed to Render staging at `https://rtsolutions-preview.onrender.com`. Contact/social details remain intentionally unconfigured; placeholder links and unverified response-time/business-hour claims are suppressed. Render build runs lint, typecheck and production build. Playwright must be re-run against this exact revision before merge.
+**Preview status:** Render staging service has been provisioned at `https://rtsolutions-preview.onrender.com`; its initial build is still in progress and has not yet produced a live preview. Contact/social details remain intentionally unconfigured; placeholder links and unverified response-time/business-hour claims are suppressed. The Render build runs lint, typecheck and production build. Playwright must pass against the exact deployed revision before merge.
 
 ## Quick Start
 
