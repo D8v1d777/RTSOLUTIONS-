@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Mail, MessageSquare, ExternalLink, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
+import { Mail, ExternalLink, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import { config } from '@/lib/config';
 
 // Types for form data
@@ -19,13 +19,26 @@ type FormData = {
 
 // Pure function for mailto URL generation - testable independently
 export const buildMailtoUrl = (data: FormData, verifiedEmail: string): string => {
-  const subject = encodeURIComponent(`Project Inquiry: ${data.projectType}`);
+  const projectTypeLabel =
+    config.projectTypes.find((option) => option.value === data.projectType)?.label ||
+    data.projectType ||
+    'Not specified';
+  const budgetLabel =
+    config.budgetRanges.find((option) => option.value === data.budget)?.label ||
+    data.budget ||
+    'Not specified';
+  const timelineLabel =
+    config.timelines.find((option) => option.value === data.timeline)?.label ||
+    data.timeline ||
+    'Not specified';
+
+  const subject = encodeURIComponent(`Project Inquiry: ${projectTypeLabel}`);
   const bodyLines = [
     `Name: ${data.name}`,
     `Email: ${data.email}`,
-    `Project Type: ${data.projectType}`,
-    `Budget Range: ${data.budget || 'Not specified'}`,
-    `Timeline: ${data.timeline || 'Not specified'}`,
+    `Project Type: ${projectTypeLabel}`,
+    `Budget Range: ${budgetLabel}`,
+    `Timeline: ${timelineLabel}`,
     '',
     'Project Details:',
     data.message,
@@ -35,6 +48,7 @@ export const buildMailtoUrl = (data: FormData, verifiedEmail: string): string =>
 };
 
 export function Contact() {
+  const hasVerifiedRecipient = !config.isPlaceholder && Boolean(config.contact.verifiedEmail);
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'mailto-sent' | 'placeholder-warning'>('idle');
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -74,7 +88,7 @@ export function Contact() {
     await new Promise((resolve) => setTimeout(resolve, 300));
 
     // Use single source of truth: config.isPlaceholder
-    if (config.isPlaceholder || !config.contact.verifiedEmail) {
+    if (!hasVerifiedRecipient) {
       setFormState('placeholder-warning');
       return;
     }
@@ -137,12 +151,11 @@ export function Contact() {
               <span className="text-crimson-glow">your project.</span>
             </h2>
             <p className="text-lg text-text-secondary leading-relaxed mb-10 max-w-xl">
-              No sales scripts. No middlemen. You'll talk directly with the people who'd be doing the work.
-              Share what you're building. Your details will stay in this form until verified contact information is configured.
+              Tell us what you're trying to make, the constraints around it, and what a useful outcome would look like. If no verified recipient is configured, nothing is sent or stored; your draft remains only in this open page.
             </p>
 
             {/* Verified contact method — never expose placeholder addresses */}
-            { !config.isPlaceholder && config.contact.verifiedEmail ? (
+            { hasVerifiedRecipient ? (
               <a
                 href={`mailto:${config.contact.verifiedEmail}`}
                 className="group flex items-center gap-4 p-5 glass-panel-strong rounded-xl hover:border-crimson-dim/50 transition-all duration-300"
@@ -162,7 +175,7 @@ export function Contact() {
                 </div>
                 <div>
                   <p className="font-mono text-xs text-text-dim uppercase tracking-wider">Email</p>
-                  <p className="text-text-secondary">Verified contact details are being configured.</p>
+                  <p className="text-text-secondary">No verified contact address is published yet.</p>
                 </div>
               </div>
             )}
@@ -177,7 +190,7 @@ export function Contact() {
               >
                 <p className="font-mono text-xs text-crimson-glow flex items-center gap-2">
                   <ExternalLink className="w-3 h-3" aria-hidden="true" />
-                  Placeholder contact details — replace with verified info in config
+                  Contact details are intentionally unpublished until verified.
                 </p>
               </motion.div>
             )}
@@ -212,7 +225,7 @@ export function Contact() {
                         No verified contact address is configured yet. Your message has not been sent, and no placeholder address will be shown.
                       </p>
                       <p className="text-text-secondary text-sm mb-6">
-                        Your entries remain in this form. You can return later when verified contact details are available.
+                        Keep this page open to retain your draft. Leaving or refreshing the page clears it.
                       </p>
                       <button
                         onClick={dismissNotice}
@@ -266,6 +279,7 @@ export function Contact() {
               {(formState === 'idle' || formState === 'submitting' || formState === 'mailto-sent') && (
                 <motion.form
                   key="form"
+                  noValidate
                   onSubmit={handleSubmit}
                   className="glass-panel-strong rounded-2xl p-8 lg:p-10 space-y-6"
                   initial={{ opacity: 0, x: 20 }}
@@ -297,6 +311,8 @@ export function Contact() {
                         type="text"
                         id="name"
                         name="name"
+                        autoComplete="name"
+                        required
                         value={formData.name}
                         onChange={handleChange}
                         className={`w-full px-4 py-3 glass-panel rounded-lg border transition-all duration-200 ${
@@ -326,6 +342,8 @@ export function Contact() {
                         type="email"
                         id="email"
                         name="email"
+                        autoComplete="email"
+                        required
                         value={formData.email}
                         onChange={handleChange}
                         className={`w-full px-4 py-3 glass-panel rounded-lg border transition-all duration-200 ${
@@ -356,6 +374,7 @@ export function Contact() {
                       <select
                         id="projectType"
                         name="projectType"
+                        required
                         value={formData.projectType}
                         onChange={handleChange}
                         className={`w-full px-4 py-3 glass-panel rounded-lg border transition-all duration-200 appearance-none ${
@@ -448,6 +467,7 @@ export function Contact() {
                     <textarea
                       id="message"
                       name="message"
+                      required
                       value={formData.message}
                       onChange={handleChange}
                       rows={6}
@@ -456,7 +476,7 @@ export function Contact() {
                       } text-white placeholder-text-dim focus:outline-none focus:ring-2 focus:ring-crimson-glow/20`}
                       placeholder="Tell us about your project: goals, constraints, tech preferences, timeline drivers, anything that helps us understand the shape of the work."
                       aria-invalid={errors.message ? 'true' : 'false'}
-                      aria-describedby={errors.message ? 'message-error' : 'message-hint'}
+                      aria-describedby={errors.message ? 'message-hint message-error' : 'message-hint'}
                       disabled={formState === 'submitting'}
                     />
                     <p id="message-hint" className="mt-1.5 text-sm text-text-dim">
@@ -481,15 +501,15 @@ export function Contact() {
                         Preparing...
                       </>) : (
                       <>
-                        Send Message
-                        <ExternalLink className="w-5 h-5" aria-hidden="true" />
+                        {hasVerifiedRecipient ? 'Open email draft' : 'Review contact status'}
+                        {hasVerifiedRecipient && <ExternalLink className="w-5 h-5" aria-hidden="true" />}
                       </>
                     )}
                   </button>
 
                   <p className="text-xs text-text-dim text-center sm:text-left">
-                    {config.isPlaceholder || !config.contact.verifiedEmail
-                      ? 'No verified contact recipient is configured. Your message remains in this form and is not sent or stored by RTSOLUTIONS.'
+                    {!hasVerifiedRecipient
+                      ? 'No verified recipient is configured. Your draft stays in this open page only; leaving or refreshing clears it. Nothing is sent or stored by RTSOLUTIONS.'
                       : 'This form prepares a mailto: draft in your email client. You must review and send it yourself; no message is transmitted to RTSOLUTIONS until you do.'}
                     {config.contact.privacyPolicyUrl && (
                       <>

@@ -17,84 +17,84 @@ const processSteps = [
     title: 'Discovery',
     icon: Search,
     description:
-      'We map the problem space. Stakeholder interviews, competitive audit, technical landscape, and constraint analysis. Outcome: a shared understanding of what needs to exist and why.',
+      'We clarify the problem, the people it affects, and the constraints around it. The goal is a shared brief before a solution is chosen.',
     deliverables: [
       'Project brief & success criteria',
-      'Technical feasibility report',
-      'Risk & constraint register',
+      'Technical feasibility notes',
+      'Risks and constraints',
       'Rough timeline & budget range',
     ],
-    duration: '1–2 weeks',
+    duration: 'Varies by scope',
   },
   {
     number: '02',
     title: 'Direction',
     icon: Lightbulb,
     description:
-      'We define the creative and technical north star. Concept development, architecture decisions, technology selection, and design language exploration. Outcome: aligned vision before execution.',
+      'We explore the creative and technical direction before committing to a build. Trade-offs are made visible early.',
     deliverables: [
-      'Creative concepts (2–3 directions)',
-      'Technical architecture decision records',
+      'Creative directions, where useful',
+      'Architecture decisions and trade-offs',
       'Design system foundations',
-      'Interactive prototypes for validation',
+      'Prototype of key interactions',
     ],
-    duration: '2–3 weeks',
+    duration: 'Varies by scope',
   },
   {
     number: '03',
     title: 'Design',
     icon: PenTool,
     description:
-      'We craft the experience. High-fidelity designs, motion specs, component library, accessibility annotations, and responsive behavior. Outcome: production-ready design system.',
+      'We shape the visual system, page structure, and interaction details around the agreed goals.',
     deliverables: [
-      'Complete page/screen designs',
-      'Motion & interaction specs',
-      'Component library (Figma + code)',
-      'Accessibility audit checklist',
+      'Page and screen designs',
+      'Interaction and motion notes',
+      'Reusable component patterns',
+      'Responsive and accessibility considerations',
     ],
-    duration: '3–5 weeks',
+    duration: 'Varies by scope',
   },
   {
     number: '04',
     title: 'Engineering',
     icon: Code2,
     description:
-      'We build it for real. Clean architecture, type-safe code, automated testing, performance budgets, and CI/CD. Outcome: maintainable, scalable codebase.',
+      'We implement the agreed experience with maintainable structure, typed code, and checks appropriate to the product.',
     deliverables: [
-      'Production codebase (Git)',
-      'Automated test suite',
-      'Performance benchmarks',
-      'Documentation & handoff',
+      'Working codebase',
+      'Automated checks suited to scope',
+      'Performance checks on key paths',
+      'Setup and handoff notes',
     ],
-    duration: '4–8 weeks',
+    duration: 'Varies by scope',
   },
   {
     number: '05',
     title: 'Refinement',
     icon: CheckCircle2,
     description:
-      'We polish until it feels inevitable. Cross-browser testing, device testing, accessibility verification, performance tuning, and stakeholder review cycles.',
+      'We test the important paths, address defects, and tune the experience before release.',
     deliverables: [
-      'QA sign-off report',
-      'Lighthouse & Core Web Vitals',
-      'Accessibility compliance (WCAG AA)',
-      'Launch checklist completion',
+      'QA findings and fixes',
+      'Browser and device checks',
+      'Accessibility checks within agreed scope',
+      'Release-readiness checklist',
     ],
-    duration: '1–2 weeks',
+    duration: 'Varies by scope',
   },
   {
     number: '06',
     title: 'Launch',
     icon: Rocket,
     description:
-      'We ship and stay. Deployment, monitoring setup, analytics configuration, and post-launch support. Outcome: a living product that evolves.',
+      'We prepare the release, deploy to the agreed environment, and make the handoff clear. Any ongoing support is defined in the project scope.',
     deliverables: [
-      'Production deployment',
-      'Monitoring & alerting',
-      'Analytics & error tracking',
-      '30-day support window',
+      'Release deployment',
+      'Operational handoff notes',
+      'Monitoring or analytics, if agreed',
+      'Post-launch support as scoped',
     ],
-    duration: 'Ongoing',
+    duration: 'Varies by scope',
   },
 ];
 
@@ -134,7 +134,7 @@ export function Process() {
             <span className="text-crimson-glow">No shortcuts.</span>
           </h2>
           <p className="mt-6 text-lg text-text-secondary leading-relaxed">
-            Every project follows the same arc. The timeline flexes. The rigor doesn't.
+            Timing and deliverables are agreed once the scope is clear.
           </p>
         </motion.div>
 
@@ -226,10 +226,10 @@ export function Process() {
           <div className="glass-panel-crimson rounded-2xl p-8 lg:p-12">
             <Quote className="w-10 h-10 text-crimson-glow/30 mx-auto mb-4" aria-hidden="true" />
             <p className="font-display text-lg lg:text-xl text-text-secondary leading-relaxed mb-4">
-              "Process isn't bureaucracy. It's how we keep craft honest at scale."
+              "A clear process makes room for good judgment."
             </p>
             <p className="text-sm text-text-dim font-mono tracking-wider uppercase">
-              — RTSOLUTIONS operating principle
+              A NOTE ON PROCESS
             </p>
           </div>
         </motion.div>

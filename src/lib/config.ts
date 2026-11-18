@@ -24,11 +24,10 @@ export const config = {
 
   // Domain (PLACEHOLDER - replace with verified domain)
   domain: '',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://rtsolutions-preview.onrender.com',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://rtsolutions-site.onrender.com',
 
   // SEO
   ogImage: '/og-image.svg',
-  twitterHandle: '@rtsolutions',
 
   // Services
   services: [

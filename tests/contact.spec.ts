@@ -19,23 +19,23 @@ test.describe('Contact Form - Unit Tests', () => {
     const url = buildMailtoUrl(formData, verifiedEmail);
 
     expect(url).toContain('mailto:hello@rtsolutions.dev');
-    expect(url).toContain('subject=Project%20Inquiry%3A%20website');
+    expect(url).toContain('subject=Project%20Inquiry%3A%20Custom%20Website');
     expect(url).toContain('Name%3A%20Test%20User');
     expect(url).toContain('Email%3A%20test%40example.com');
-    expect(url).toContain('Project%20Type%3A%20website');
-    expect(url).toContain('Budget%20Range%3A%2025-50');
-    expect(url).toContain('Timeline%3A%201-3');
+    expect(url).toContain('Project%20Type%3A%20Custom%20Website');
+    expect(url).toContain('Budget%20Range%3A%20%2425k%20%E2%80%93%20%2450k');
+    expect(url).toContain('Timeline%3A%201%E2%80%933%20months');
     expect(url).toContain('Project%20Details%3A');
     const parsed = new URL(url);
     expect(parsed.protocol).toBe('mailto:');
     expect(parsed.pathname).toBe(verifiedEmail);
     const params = new URLSearchParams(parsed.search);
-    expect(params.get('subject')).toBe('Project Inquiry: website');
+    expect(params.get('subject')).toBe('Project Inquiry: Custom Website');
     expect(params.get('body')).toContain('Name: Test User');
     expect(params.get('body')).toContain('Email: test@example.com');
-    expect(params.get('body')).toContain('Project Type: website');
-    expect(params.get('body')).toContain('Budget Range: 25-50');
-    expect(params.get('body')).toContain('Timeline: 1-3');
+    expect(params.get('body')).toContain('Project Type: Custom Website');
+    expect(params.get('body')).toContain('Budget Range: $25k – $50k');
+    expect(params.get('body')).toContain('Timeline: 1–3 months');
     expect(params.get('body')).toContain('special chars: & = % ? # and Unicode: Ω 雪');
   });
 
@@ -195,7 +195,12 @@ test.describe('Contact Form - E2E Tests', () => {
   });
 
   test('placeholder contact notice explains that no message is sent', async ({ page }) => {
-    await expect(page.getByText('No verified contact recipient is configured. Your message remains in this form and is not sent or stored by RTSOLUTIONS.')).toBeVisible();
+    await expect(page.getByText('No verified recipient is configured. Your draft stays in this open page only; leaving or refreshing clears it. Nothing is sent or stored by RTSOLUTIONS.')).toBeVisible();
+  });
+
+  test('placeholder mode labels the submit action honestly', async ({ page }) => {
+    await expect(page.locator('#contact button[type="submit"]')).toHaveText('Review contact status');
+    await expect(page.locator('#contact')).toContainText('No verified contact address is published yet.');
   });
 
   test('no false storage claim in footer text', async ({ page }) => {
@@ -258,13 +263,13 @@ test.describe('Contact Form - E2E Tests', () => {
 
   test('placeholder notice visible in info column when config.isPlaceholder is true', async ({ page }) => {
     // Check for placeholder notice in info column - use more specific selector
-    await expect(page.locator('#contact').locator('text=Placeholder contact details — replace with verified info in config').first()).toBeVisible();
+    await expect(page.locator('#contact').locator('text=Contact details are intentionally unpublished until verified.').first()).toBeVisible();
   });
 
   test('placeholder mode never exposes unverified email links or addresses', async ({ page }) => {
     await expect(page.locator('#contact a[href^="mailto:"]')).toHaveCount(0);
     await expect(page.locator('footer a[href^="mailto:"]')).toHaveCount(0);
     await expect(page.getByText('hello@rtsolutions.dev')).toHaveCount(0);
-    await expect(page.getByText('Verified contact details are being configured.')).toBeVisible();
+    await expect(page.getByText('No verified contact address is published yet.')).toBeVisible();
   });
 });

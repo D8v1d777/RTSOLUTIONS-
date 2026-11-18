@@ -1,5 +1,7 @@
 # QA Report — RTSOLUTIONS Website
 
+> **Historical snapshot.** The 31/31 Playwright results and screenshots in this document are not current-head release evidence. See [`QA_REPORT_2026-11-19.md`](QA_REPORT_2026-11-19.md) and [PR #4](https://github.com/D8v1d777/RTSOLUTIONS-/pull/4) for the independent quality pass and its current CI evidence.
+
 **Date:** 2026-11-18  
 **Branch:** `claude/fable-5-2-build`  
 **Commit:** Preview branch `claude/fable-5-2-build` — current SHA is tracked in the Render deploy record  

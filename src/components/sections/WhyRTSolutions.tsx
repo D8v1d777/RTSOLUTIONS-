@@ -17,43 +17,43 @@ const differentiators = [
     icon: Sparkles,
     title: 'Creative Frontend Craft',
     description:
-      'We treat the browser as a creative medium. Motion, interaction, 3D, typography, and layout aren\'t afterthoughts—they\'re the work. The result feels authored, not assembled.',
-    proof: 'Custom design systems, motion languages, and 3D experiences built from scratch—not template configurations.',
+      'We treat the browser as a creative medium. Typography, layout, interaction, and motion should support the idea—not decorate it. The result should feel authored, not assembled.',
+    proof: 'Visual direction and interaction choices are developed alongside the interface, not added at the end.',
   },
   {
     icon: Brain,
     title: 'Thoughtful Engineering',
     description:
-      'Clean architecture, strict TypeScript, automated testing, performance budgets, and CI/CD aren\'t optional add-ons. They\'re how we ensure the craft survives contact with reality.',
-    proof: 'Type-safe end-to-end, 80%+ test coverage targets, Lighthouse CI gates, and documented architecture decisions.',
+      'A clear visual experience still needs a sound foundation. We favor understandable structure, typed code, useful tests, and performance work tied to real user needs.',
+    proof: 'Technical decisions, automated checks, and performance considerations are documented against the agreed project scope.',
   },
   {
     icon: Hammer,
     title: 'Full-Stack Ownership',
     description:
-      'We don\'t hand off designs to separate dev teams. The people who design it build it. That continuity means intent survives implementation—and the result is cohesive.',
-    proof: 'Designers who write production React. Engineers who make typography decisions. No handoff loss.',
+      'Design and engineering work best when they inform each other. We keep the people shaping the experience close to the people implementing it.',
+    proof: 'Shared decisions, reusable interface patterns, and direct review of the finished interaction.',
   },
   {
     icon: Infinity,
     title: 'Longevity by Default',
     description:
-      'We choose boring, proven technology for the foundation and spend our innovation budget on the experience. The result works today and adapts tomorrow without rewrite cycles.',
-    proof: 'Tauri for desktop (Rust backend, web frontend), Next.js for web, PostgreSQL + Prisma. 5-year maintenance horizon minimum.',
+      'We prefer maintainable foundations and introduce new technology only when it solves a real problem. The goal is a product the next person can understand and extend.',
+    proof: 'Technology choices are weighed against product needs, constraints, and long-term maintenance—not trend cycles.',
   },
   {
     icon: Shield,
     title: 'Accessibility as Craft',
     description:
-      'WCAG AA isn\'t a compliance checkbox—it\'s a quality standard. Semantic HTML, keyboard navigation, focus management, reduced motion, and screen reader testing are baked in.',
-    proof: 'Automated aXe testing in CI, manual keyboard/screen reader QA, and accessibility annotations in every design handoff.',
+      'Accessibility is part of the craft: semantic structure, keyboard access, visible focus, and reduced-motion support should be considered from the start.',
+    proof: 'We check the paths and criteria agreed for the project, record gaps, and avoid claiming certification without an independent assessment.',
   },
   {
     icon: Heart,
     title: 'Human Scale, Honest Work',
     description:
-      'We\'re a small team by choice. You work directly with the people making your product. No account managers, no junior handoffs, no inflated headcounts. Just craft and accountability.',
-    proof: 'Principal-level involvement on every engagement. Direct Slack/email access. Transparent pricing and timelines.',
+      'Clear scope and direct communication make collaboration easier. We keep decisions visible and explain trade-offs instead of hiding behind inflated language.',
+    proof: 'Written scope, named responsibilities, and explicit assumptions—so expectations stay grounded.',
   },
 ];
 
@@ -101,7 +101,7 @@ export function WhyRTSolutions() {
             <span className="text-crimson-glow">One standard.</span>
           </h2>
           <p className="mt-6 text-lg text-text-secondary leading-relaxed">
-            We\'re not the right fit for everyone. That\'s intentional.
+            We're not the right fit for everyone. That's intentional.
           </p>
         </motion.div>
 
@@ -156,10 +156,10 @@ export function WhyRTSolutions() {
             </div>
             <div>
               <h3 className="font-display text-xl lg:text-2xl font-medium text-white mb-2">
-                We\'re not for everyone
+                We're not for everyone
               </h3>
               <p className="text-text-secondary">
-                And we\'re honest about it. These aren't value judgments—just scope clarity.
+                And we're honest about it. These aren't value judgments—just scope clarity.
               </p>
             </div>
           </div>

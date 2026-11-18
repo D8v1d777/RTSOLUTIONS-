@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowUpRight, Menu, X } from 'lucide-react';
+import styles from './Navigation.module.css';
 
 const navItems = [
   { href: '#manifesto', label: 'Studio' },
@@ -23,6 +24,19 @@ export function Navigation() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setIsMobileMenuOpen(false);
+      document.querySelector<HTMLButtonElement>('[aria-controls="mobile-menu"]')?.focus();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isMobileMenuOpen]);
 
   return (
     <header className={`site-header fixed inset-x-0 top-0 z-50 transition-all duration-300 ${isScrolled ? 'site-header--scrolled' : ''}`}>
@@ -46,7 +60,7 @@ export function Navigation() {
         </Link>
 
         <button
-          className="site-mobile-toggle md:hidden"
+          className={`site-mobile-toggle ${styles.mobileOnly} md:hidden`}
           type="button"
           onClick={() => setIsMobileMenuOpen((open) => !open)}
           aria-expanded={isMobileMenuOpen}
