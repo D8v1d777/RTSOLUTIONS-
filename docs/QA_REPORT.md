@@ -22,9 +22,9 @@
 
 ---
 
-## Build Verification
+## Historical Build Verification (older snapshot; not current-SHA evidence)
 
-### Command: `npm run build` (Post-Fix)
+### Historical command: `npm run build` (prior audit snapshot)
 ```
 ▲ Next.js 16.4.6 (Turbopack)
 ✓ Running next.config.ts took 533ms
@@ -113,12 +113,12 @@ Exit code: 0
 
 **Historical total:** 31 passed, 0 failed, 0 flaky on the earlier snapshot. This is not a current-SHA result.
 
-### Screenshots on Failure
+### Historical Screenshots on Failure
 All tests configured with `screenshot: 'only-on-failure'`, `video: 'retain-on-failure'`. No failures → no artifacts generated.
 
 ---
 
-## Viewport Screenshot Capture (Fresh — Post-Fix)
+## Historical Viewport Screenshot Capture (prior audit snapshot)
 
 ### Command: `npx playwright test tests/capture-screenshots.spec.ts --project=chromium`
 
