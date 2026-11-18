@@ -28,7 +28,7 @@ export const config = {
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://rtsolutions-preview.onrender.com',
 
   // SEO
-  ogImage: '/og-image.jpg',
+  ogImage: '/og-image.svg',
   twitterHandle: '@rtsolutions',
 
   // Services
