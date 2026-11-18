@@ -194,6 +194,10 @@ test.describe('Contact Form - E2E Tests', () => {
     await expect(page.locator('text=Send another message')).not.toBeVisible();
   });
 
+  test('placeholder contact notice explains that no message is sent', async ({ page }) => {
+    await expect(page.getByText('No verified contact recipient is configured. Your message remains in this form and is not sent or stored by RTSOLUTIONS.')).toBeVisible();
+  });
+
   test('no false storage claim in footer text', async ({ page }) => {
     // Check that the old false storage claim is gone
     await expect(page.locator('text=By submitting, you agree we may store this information')).not.toBeVisible();
