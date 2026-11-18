@@ -5,7 +5,7 @@ An independent software and digital product studio. We build custom websites, we
 ## Project Status
 
 **Current branch:** `claude/fable-5-2-build`  
-**Latest verification:** 2026-11-18 — Production build passes (clean, no warnings), TypeScript strict mode clean, Playwright tests pass (31/31 Chromium), fresh screenshots captured at all 4 target viewports. All P0/P1 audit findings resolved. Contact system completed with honest mailto fallback.
+**Preview status:** Release candidate deployed to Render staging at `https://rtsolutions-preview.onrender.com`. Contact/social details remain intentionally unconfigured; placeholder links and unverified response-time/business-hour claims are suppressed. Render build runs lint, typecheck and production build. Playwright must be re-run against this exact revision before merge.
 
 ## Quick Start
 
@@ -99,7 +99,7 @@ docs/
 | Lazy Loading | `next/dynamic` with `ssr: false` for JellyfishCanvas | Non-blocking initial render |
 | Design Tokens | Tailwind v4 `@theme` with CSS custom properties (`--color-crimson`, `--color-bg`, etc.) | Single source of truth, runtime theming |
 | Fonts | Space Grotesk (display), DM Sans (body), JetBrains Mono (technical) | Editorial, readable, technical |
-| Contact Form | Client-side validation + `mailto:` fallback; success toast; no fake submission | Honest UX, no backend dependency |
+| Contact Form | Client-side validation; mailto draft only after a verified recipient is configured | No backend; placeholder mode suppresses all contact links |
 
 ## Responsive Targets
 
@@ -136,14 +136,14 @@ All placeholder business details are centralized in `src/lib/config.ts`:
 
 ```typescript
 export const config = {
-  email: 'hello@rtsolutions.dev',      // Replace with verified address
+  email: '',                               // Set only after owner verifies recipient
   domain: 'rtsolutions.dev',            // Replace with verified domain
   social: {
     github: 'https://github.com/rtsolutions',
     twitter: 'https://twitter.com/rtsolutions',
     linkedin: 'https://linkedin.com/company/rtsolutions',
   },
-  isPlaceholder: true,                  // Flip to false when verified
+  isPlaceholder: true,                  // Keep true until all public contact details are verified
 };
 ```
 
@@ -156,7 +156,7 @@ export const config = {
 | Production build | `npm run build` | ✅ Pass (clean, no warnings) |
 | TypeScript strict | `npm run typecheck` | ✅ Pass |
 | Lint | `npx eslint src/ --ext .ts,.tsx --quiet` | ✅ Pass (0 errors) |
-| E2E tests (Chromium) | `npm run test` | ✅ 31/31 Pass |
+| E2E tests (Chromium) | `npm run test` | Historical report: 31/31; rerun required for current preview commit |
 | Viewport screenshots | `npx playwright test tests/capture-screenshots.spec.ts` | ✅ 4/4 Captured (fresh) |
 | Lighthouse CI | `npm run lighthouse` | ⏳ Pending |
 
@@ -164,8 +164,8 @@ export const config = {
 
 1. **TypeScript version:** Pinned to 6.1.3 for `eslint-config-next` compatibility (TS 7.x unsupported as of 2026-11).
 2. **WebGL fallback:** The 3D jellyfish gracefully degrades to SVG on WebGL failure, but GPU-dependent features (transmission, SSS) are unavailable in fallback.
-3. **Contact form:** Uses `mailto:` fallback; no backend endpoint implemented. Replace with API route when infrastructure exists. Honeypot field added for bot protection.
-4. **Social links:** All point to placeholder URLs. Update in `src/lib/config.ts` when accounts are created; flip `isPlaceholder: false`.
+3. **Contact form:** Uses `mailto:` fallback; no backend endpoint implemented. Replace with API route when infrastructure exists. Honeypot field is client-side filtering only; it is not server-side bot protection.
+4. **Contact/social details:** Intentionally blank and suppressed until owner-verified. Configure `src/lib/config.ts` before enabling these links.
 5. **Environment lighting:** The Drei `Environment` component was removed because no cubemap assets were supplied. The scene currently uses procedural lighting; add a tracked HDR/EXR environment only if visual testing demonstrates a clear benefit.
 6. **Playwright on CI:** Firefox/WebKit require system dependencies (`libgtk-4`, etc.). Chromium is the primary CI target.
 7. **Content Security Policy:** Not configured. Recommended for production deployment.
