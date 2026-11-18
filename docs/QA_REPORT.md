@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-18  
 **Branch:** `claude/fable-5-2-build`  
-**Commit:** `2b1c37e` (plus audit fixes)  
+**Application verification commit:** `9917380` (audit fixes). **Repository follow-up:** `69a20dd` restores the reference image and removes tracked `.omc/` session artifacts; no application source was changed in that cleanup commit.  
 **Environment:** Linux (Node 20), Next.js 16.4.6, React 19, Chromium 1255
 
 ---
@@ -18,7 +18,7 @@
 | Viewport Screenshots | ✅ 4/4 Captured | Fresh captures at 390×844, 768×1024, 1440×900, 1920×1080 |
 | Lighthouse CI | ⏳ Pending | Requires running dev server |
 
-**Overall:** Production-ready. All P0 blockers resolved. All critical functionality verified.
+**Overall:** Automated production checks pass on the audited application commit. All P0 blockers resolved; human design, accessibility, and performance sign-off remains recommended below.
 
 ---
 
@@ -244,7 +244,7 @@ All tests configured with `screenshot: 'only-on-failure'`, `video: 'retain-on-fa
 | QA-003 | Social links are placeholders | Low | Update `src/lib/config.ts` when accounts created; flip `isPlaceholder: false` |
 | QA-004 | Firefox/WebKit Playwright need system deps (`libgtk-4`, etc.) | Low | CI uses Chromium only |
 | QA-005 | No Content Security Policy headers | Medium | Recommended for production deployment |
-| QA-006 | Reference image missing from `docs/reference/` | Low | Add visual direction reference for audit continuity |
+| QA-006 | Reference image | — | Resolved — committed at `docs/reference/visual-direction-reference.webp`; no manual upload required |
 | QA-007 | No `preload` for Three.js/R3F chunks | Low | Optional performance enhancement |
 
 ---
