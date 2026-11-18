@@ -1,37 +1,44 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Independent quality pass', () => {
-  test('canonical and social metadata use the current site origin', async ({ page }) => {
+  test('canonical and social metadata use one configured site origin', async ({ page }) => {
     await page.goto('/');
-    const origin = new URL(page.url()).origin;
 
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `${origin}/`);
+    const canonicalHref = await page.locator('link[rel="canonical"]').getAttribute('href');
+    expect(canonicalHref).toBeTruthy();
+    const canonical = new URL(canonicalHref!);
+    expect(canonical.pathname).toBe('/');
+
     const ogUrl = await page.locator('meta[property="og:url"]').getAttribute('content');
     expect(ogUrl).toBeTruthy();
-    expect(new URL(ogUrl!).origin).toBe(origin);
-    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', `${origin}/og-image.svg`);
-    await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute('content', `${origin}/og-image.svg`);
+    expect(new URL(ogUrl!).origin).toBe(canonical.origin);
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', `${canonical.origin}/og-image.svg`);
+    await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute('content', `${canonical.origin}/og-image.svg`);
   });
 
-  test('robots and sitemap point to the same origin and only list real pages', async ({ page }) => {
+  test('robots and sitemap point to the canonical origin and only list real pages', async ({ page }) => {
     await page.goto('/');
-    const origin = new URL(page.url()).origin;
+    const canonicalHref = await page.locator('link[rel="canonical"]').getAttribute('href');
+    expect(canonicalHref).toBeTruthy();
+    const canonicalOrigin = new URL(canonicalHref!).origin;
+    const requestOrigin = new URL(page.url()).origin;
+
     const [robotsResponse, sitemapResponse] = await Promise.all([
-      page.request.get(`${origin}/robots.txt`),
-      page.request.get(`${origin}/sitemap.xml`),
+      page.request.get(`${requestOrigin}/robots.txt`),
+      page.request.get(`${requestOrigin}/sitemap.xml`),
     ]);
 
     expect(robotsResponse.status()).toBe(200);
     expect(sitemapResponse.status()).toBe(200);
 
     const robots = await robotsResponse.text();
-    expect(robots).toContain(`Sitemap: ${origin}/sitemap.xml`);
+    expect(robots).toContain(`Sitemap: ${canonicalOrigin}/sitemap.xml`);
     expect(robots).not.toContain('rtsolutions.dev');
     expect(robots).not.toContain('Disallow: /_next/');
 
     const sitemap = await sitemapResponse.text();
     const urls = [...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map((match) => match[1]);
-    expect(urls).toEqual([`${origin}/`]);
+    expect(urls).toEqual([`${canonicalOrigin}/`]);
     expect(urls.some((url) => url.includes('#'))).toBe(false);
   });
 
@@ -63,7 +70,26 @@ test.describe('Independent quality pass', () => {
 
     await expect(form.locator('input[name="name"]')).toHaveAttribute('autocomplete', 'name');
     await expect(form.locator('input[name="email"]')).toHaveAttribute('autocomplete', 'email');
-    await expect(page.locator('#contact')).toContainText('Leaving or refreshing clears it');
+    await expect(page.locator('#contact')).toContainText('Leaving or refreshing the page clears it');
+  });
+
+  test('public copy avoids unverified service-level promises', async ({ page }) => {
+    await page.goto('/');
+    const copy = `${await page.locator('#process').innerText()} ${await page.locator('#why').innerText()}`;
+
+    for (const claim of [
+      '80%+',
+      '5-year maintenance horizon',
+      'WCAG AA',
+      'Automated aXe testing',
+      '30-day support window',
+      'Direct Slack/email access',
+      'Principal-level involvement',
+    ]) {
+      expect(copy).not.toContain(claim);
+    }
+
+    expect(copy).toContain('Varies by scope');
   });
 
   test('mobile menu opens, navigates, and closes', async ({ page }) => {
