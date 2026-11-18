@@ -9,23 +9,23 @@ export const config = {
     'An independent software and digital product studio building custom websites, web applications, and desktop applications. Our differentiator is creative frontend craft.',
 
   // Contact Information (PLACEHOLDERS - replace with verified details)
-  email: 'hello@rtsolutions.dev',
+  email: '',
   phone: '', // Optional
   address: '', // Optional
   isPlaceholder: true,
 
   // Social Profiles (PLACEHOLDERS - replace with verified URLs)
   social: {
-    github: 'https://github.com/rtsolutions',
-    twitter: 'https://twitter.com/rtsolutions',
-    linkedin: 'https://linkedin.com/company/rtsolutions',
+    github: '',
+    twitter: '',
+    linkedin: '',
     dribbble: '',
     behance: '',
   },
 
   // Domain (PLACEHOLDER - replace with verified domain)
-  domain: 'rtsolutions.dev',
-  url: 'https://rtsolutions.dev',
+  domain: '',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://rtsolutions-preview.onrender.com',
 
   // SEO
   ogImage: '/og-image.jpg',
@@ -78,10 +78,10 @@ export const config = {
 
   // Contact Configuration (single source of truth for contact form)
   contact: {
-    verifiedEmail: 'hello@rtsolutions.dev',
+    verifiedEmail: '',
     // Use config.isPlaceholder as single source - contact form checks this
-    responseTime: '1–2 business days',
-    businessHours: 'Mon–Fri, 9am–6pm CET',
+    responseTime: '',
+    businessHours: '',
     privacyPolicyUrl: '',
   } as const,
 } as const;
