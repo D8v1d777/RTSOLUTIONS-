@@ -188,7 +188,7 @@ Used consistently across cards, form, footer. Backdrop-filter blur(20-24px) with
 | **ESLint + TS version** | ⚠️ **Documented limitation** | TS 6.1.3 pinned; `eslint-config-next` incompatible with TS 7.x as of 2026-11 |
 | **Missing HDR/EXR env assets** | ⚠️ **Documented limitation** | `/env/` cubemap 404; `Environment` preset falls back to procedural |
 | **Placeholder social links** | ⚠️ **Documented limitation** | Social profile URLs are blank and their links are suppressed while `isPlaceholder: true`. |
-| **Contact form limitations** | ⚠️ **Launch blocker** | Client-side validation only; handler simulates success and clears the form without email delivery or backend; honeypot is client-side only |
+| **Contact form limitations** | ⚠️ **Known limitation** | No backend delivery; placeholder mode suppresses contact links; configured mode prepares a mailto draft only; honeypot is client-side only |
 
 **Distinction:** This table is a historical audit snapshot. The superseding release note at the top defines current contact behavior and current launch caveats.
 
@@ -257,7 +257,7 @@ Used consistently across cards, form, footer. Backdrop-filter blur(20-24px) with
 11. **Removed false claims:** Deleted fake "Message sent" toast, false storage claim, dead privacy link
 12. **Config centralization:** All business info (response time, business hours, budget ranges, project types) from `config.ts`
 13. **E2E tests:** Added 12 comprehensive contact form tests
-14. **All tests pass:** 31/31 Playwright tests passing
+14. **Historical test snapshot:** 31/31 Playwright tests passed before the latest placeholder-suppression changes; current SHA must be verified separately.
 
 ### Commands to Run After Fixes
 
@@ -278,7 +278,7 @@ npx playwright test tests/capture-screenshots.spec.ts --project=chromium  # 4/4 
 | Production Build | `npm run build` | ✅ Pass | Clean, no warnings, metadataBase set |
 | TypeScript Strict | `npm run typecheck` | ✅ Pass | 0 errors |
 | Lint | `npx eslint src/ --ext .ts,.tsx --quiet` | ✅ Pass | 0 errors, 1 warning (unused var) |
-| E2E (Chromium) | `npm run test` | ✅ 31/31 | All pass (19 original + 12 contact) |
+| E2E (Chromium) | `npm run test` | ⚠️ Historical 31/31 | Must rerun on the current preview SHA |
 | Viewport Screenshots | `capture-screenshots.spec.ts` | ✅ 4/4 | Fresh captures at all 4 viewports |
 | Lighthouse CI | `npm run lighthouse` | ⏳ Pending | Requires dev server |
 
