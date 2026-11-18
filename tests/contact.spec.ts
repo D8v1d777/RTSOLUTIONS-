@@ -10,7 +10,7 @@ test.describe('Contact Form - Unit Tests', () => {
     projectType: 'website',
     budget: '25-50',
     timeline: '1-3',
-    message: 'This is a test message with special chars: & = % ? #',
+    message: 'This is a test message with special chars: & = % ? # and Unicode: Ω 雪',
     website: '', // honeypot
   };
 
@@ -26,7 +26,17 @@ test.describe('Contact Form - Unit Tests', () => {
     expect(url).toContain('Budget%20Range%3A%2025-50');
     expect(url).toContain('Timeline%3A%201-3');
     expect(url).toContain('Project%20Details%3A');
-    expect(url).toContain('This%20is%20a%20test%20message%20with%20special%20chars%3A%20%26%20%3D%20%25%20%3F%20%23');
+    const parsed = new URL(url);
+    expect(parsed.protocol).toBe('mailto:');
+    expect(parsed.pathname).toBe(verifiedEmail);
+    const params = new URLSearchParams(parsed.search);
+    expect(params.get('subject')).toBe('Project Inquiry: website');
+    expect(params.get('body')).toContain('Name: Test User');
+    expect(params.get('body')).toContain('Email: test@example.com');
+    expect(params.get('body')).toContain('Project Type: website');
+    expect(params.get('body')).toContain('Budget Range: 25-50');
+    expect(params.get('body')).toContain('Timeline: 1-3');
+    expect(params.get('body')).toContain('special chars: & = % ? # and Unicode: Ω 雪');
   });
 
   test('buildMailtoUrl handles missing optional fields', () => {
@@ -235,10 +245,11 @@ test.describe('Contact Form - E2E Tests', () => {
     expect(options).toContain('Flexible');
   });
 
-  test('response time and business hours come from config', async ({ page }) => {
-    // These are visible in the info column - target the specific contact info cards
-    await expect(page.locator('#contact >> text=Response Time').locator('..').locator('text=1–2 business days')).toBeVisible();
-    await expect(page.locator('#contact >> text=Work Hours').locator('..').locator('text=Mon–Fri, 9am–6pm CET')).toBeVisible();
+  test('unverified response time and business hours are not presented as commitments', async ({ page }) => {
+    await expect(page.locator('#contact').getByText('Response Time')).toHaveCount(0);
+    await expect(page.locator('#contact').getByText('Work Hours')).toHaveCount(0);
+    await expect(page.locator('#contact').getByText('1–2 business days')).toHaveCount(0);
+    await expect(page.locator('#contact').getByText('Mon–Fri, 9am–6pm CET')).toHaveCount(0);
   });
 
   test('placeholder notice visible in info column when config.isPlaceholder is true', async ({ page }) => {
