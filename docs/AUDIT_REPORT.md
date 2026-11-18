@@ -12,7 +12,7 @@
 
 The RTSOLUTIONS website implementation is **substantially complete and functionally sound**, with a distinctive visual identity that successfully differentiates from generic agency templates. The 3D jellyfish is a genuine real-time procedural WebGL scene—not a GIF or video—and performs well across target viewports.
 
-**Verdict: Production-ready with all P0/P1 fixes applied + contact system completed.** The contact form now uses an honest `mailto:` fallback with full form data, shows a placeholder warning when config is not verified, removes all fake success states and false privacy claims, and has 12 comprehensive E2E tests. All 31 Playwright tests pass.
+**Superseding release note (2026-11-18):** The historical audit below predates the current placeholder-suppression corrections. The current branch is a Render preview candidate, not a public-launch approval. Owner contact/social configuration remains outstanding. The contact form uses a `mailto:` draft only when a verified recipient is configured. In the current placeholder mode, no email address or mailto link is exposed. Historical test counts below are not verification of the current preview SHA.
 
 | Check | Status |
 |-------|--------|
@@ -161,7 +161,7 @@ Used consistently across cards, form, footer. Backdrop-filter blur(20-24px) with
 - **Validation:** Client-side (name, email format, projectType required, message min 50 chars) — centralized in config
 - **Honeypot:** ✅ Implemented — hidden `website` field with `tabIndex={-1}`, `autoComplete="off"`, `aria-hidden="true"`; documented as client-side filtering only
 - **Submission:** Honest `mailto:` fallback with full form data URL-encoded; opens user's mail client; **no fake success state**; form data persists after submit
-- **Placeholder handling:** When `config.contact.isPlaceholder=true`, shows inline warning "Contact details are placeholders. Please email us directly..." instead of silently opening mailto to placeholder address
+- **Placeholder handling:** When `config.isPlaceholder=true`, no placeholder email is exposed and the form explains that no verified recipient is configured.
 - **Config-driven:** Response time, business hours, budget ranges, project types all from `src/lib/config.ts`
 - **Privacy claims corrected:** Removed false storage claim ("By submitting, you agree we may store this information...") and dead privacy link (`<a href="#">Privacy notice</a>`)
 - **E2E tests:** 12 comprehensive tests covering validation, placeholder handling, form persistence, no fake success, no dead links, honeypot, mailto encoding, config-driven values
@@ -187,7 +187,7 @@ Used consistently across cards, form, footer. Backdrop-filter blur(20-24px) with
 | **Flaky nav E2E test** | ✅ **Fixed in implementation** | Test targets `div.hidden.md\\:flex >> a` specifically; 15/15 pass consistently |
 | **ESLint + TS version** | ⚠️ **Documented limitation** | TS 6.1.3 pinned; `eslint-config-next` incompatible with TS 7.x as of 2026-11 |
 | **Missing HDR/EXR env assets** | ⚠️ **Documented limitation** | `/env/` cubemap 404; `Environment` preset falls back to procedural |
-| **Placeholder social links** | ⚠️ **Documented limitation** | All point to `rtsolutions` handles that don't exist; `isPlaceholder: true` |
+| **Placeholder social links** | ⚠️ **Documented limitation** | Social profile URLs are blank and their links are suppressed while `isPlaceholder: true`. |
 | **Contact form limitations** | ⚠️ **Launch blocker** | Client-side validation only; handler simulates success and clears the form without email delivery or backend; honeypot is client-side only |
 
 **Distinction:** Items 2-5 are **documented intentional limitations** (recorded in README, TECHNICAL_DECISIONS, QA_REPORT) — not defects. Only the missing assets (P0) are genuine production blockers.
@@ -294,7 +294,7 @@ npx playwright test tests/capture-screenshots.spec.ts --project=chromium  # 4/4 
 4. **Environment cubemap** — `Environment` component removed; procedural lighting suffices. Add HDR/EXR cubemap to `public/env/` if reflections desired
 5. **Firefox/WebKit Playwright** — Need system deps (`libgtk-4`, etc.); Chromium primary CI target
 6. **No CSP headers** — Recommended for production deployment
-7. **Reference image missing** — Add to `docs/reference/` for audit continuity
+7. **Reference image** — Resolved; tracked at `docs/reference/visual-direction-reference.webp`.
 8. **No `preload` for Three.js/R3F chunks** — Optional performance enhancement
 
 ---
@@ -312,4 +312,4 @@ npx playwright test tests/capture-screenshots.spec.ts --project=chromium  # 4/4 
 
 ---
 
-**Audit findings:** The implementation is visually and structurally strong, and all P0/P1 fixes plus the contact system completion are present. The contact form now uses an honest `mailto:` fallback, shows a placeholder warning when config is not verified, removes all fake success states and false privacy claims, and has 12 comprehensive E2E tests. All 31 Playwright tests pass. The site is genuinely production-worthy and reads as a premium creative technology studio.
+**Historical audit findings:** The implementation is visually and structurally strong. See the superseding release note at the top for the current preview and owner-configuration status. The contact form now uses an honest `mailto:` fallback, shows a placeholder warning when config is not verified, removes all fake success states and false privacy claims, and has 12 comprehensive E2E tests. All 31 Playwright tests pass. The site remains a preview candidate until the current commit's verification and owner-specific configuration are complete.
