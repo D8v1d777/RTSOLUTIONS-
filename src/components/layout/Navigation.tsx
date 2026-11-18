@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowUpRight, Menu, X } from 'lucide-react';
+import styles from './Navigation.module.css';
 
 const navItems = [
   { href: '#manifesto', label: 'Studio' },
@@ -46,7 +47,7 @@ export function Navigation() {
         </Link>
 
         <button
-          className="site-mobile-toggle md:hidden"
+          className={`site-mobile-toggle ${styles.mobileOnly} md:hidden`}
           type="button"
           onClick={() => setIsMobileMenuOpen((open) => !open)}
           aria-expanded={isMobileMenuOpen}
