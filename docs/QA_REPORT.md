@@ -251,7 +251,7 @@ All tests configured with `screenshot: 'only-on-failure'`, `video: 'retain-on-fa
 
 | ID | Issue | Severity | Status |
 |----|-------|----------|--------|
-| QA-001 | TypeScript 6.1.3 pinned for ESLint compatibility | Medium | Documented; upgrade when `typescript-eslint` supports TS 7 |
+| QA-001 | TypeScript 6.0.3 pinned for ESLint compatibility | Medium | Documented; upgrade when `typescript-eslint` supports TS 7 |
 | QA-002 | Contact form uses `mailto:` fallback — no backend | Medium | Mailto draft only when verified recipient is configured; placeholder mode suppresses it |
 | QA-003 | Social links are unconfigured | Low | Links are suppressed until owner supplies verified profile URLs |
 | QA-004 | Firefox/WebKit Playwright need system deps (`libgtk-4`, etc.) | Low | CI uses Chromium only |
