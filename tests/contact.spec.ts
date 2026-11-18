@@ -270,6 +270,6 @@ test.describe('Contact Form - E2E Tests', () => {
     await expect(page.locator('#contact a[href^="mailto:"]')).toHaveCount(0);
     await expect(page.locator('footer a[href^="mailto:"]')).toHaveCount(0);
     await expect(page.getByText('hello@rtsolutions.dev')).toHaveCount(0);
-    await expect(page.getByText('Verified contact details are being configured.')).toBeVisible();
+    await expect(page.getByText('No verified contact address is published yet.')).toBeVisible();
   });
 });
