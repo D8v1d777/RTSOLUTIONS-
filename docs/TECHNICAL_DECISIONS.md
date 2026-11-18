@@ -227,28 +227,25 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jet
 
 ## 6. Contact Form
 
-### Decision: Client-side validation + `mailto:` fallback
-**Date:** 2026-11-17  
-**Status:** Confirmed
+### Current state: Client-side validation only; delivery is not implemented
+**Date:** 2026-11-18  
+**Status:** Launch blocker — see GitHub issue #3
 
-**Alternatives Considered:**
-- Full API route + email service (SendGrid, Resend)
-- Formspree / Netlify Forms
-- No form — email link only
+**Verified behavior:**
+- The current handler waits 1.5 seconds, switches to a success screen, and clears the form.
+- It does not call an API route, submit to a service, or open a `mailto:` draft.
+- The separate email link uses a placeholder address while `config.isPlaceholder` is true.
+- The honeypot check runs only in client-side code; it is not server-side spam protection.
+- The privacy copy implies data storage and links to a placeholder `#` URL; neither a storage mechanism nor a policy is configured.
 
-**Rationale:**
-- No backend infrastructure committed yet
-- `mailto:` works everywhere; user's mail client handles composition
-- Client-side validation prevents empty submissions
-- Success toast confirms action; no fake "submitted" state
-- Easy to swap for API route later (same form component)
+**Required before launch:**
+- Use a verified contact recipient with an honest `mailto:` draft fallback, or an owner-approved backend/email provider.
+- Never show “Message sent” without delivery confirmation; a mailto flow should say the user must send the prepared draft.
+- Remove or replace the false storage/privacy claims.
+- Verify response-time, business-hours/timezone and budget-range content with the owner, or remove it.
+- Keep the honeypot described as client-side only unless a server endpoint is added.
 
-**Form Fields:**
-- Name (required, min 2 chars)
-- Email (required, valid format)
-- Project Type (select: website / web-app / desktop-app / other)
-- Message (required, min 50 chars)
-- Honeypot (hidden, bot detection)
+**Existing fields:** Name, email, project type, budget, timeline, message (minimum 50 characters), and a hidden website honeypot.
 
 ---
 
@@ -399,7 +396,7 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jet
 | `src/components/sections/SelectedWork.tsx` | 6 projects |
 | `src/components/sections/Process.tsx` | 6-step timeline |
 | `src/components/sections/WhyRTSolutions.tsx` | Differentiators + not-for-everyone |
-| `src/components/sections/Contact.tsx` | Form + mailto fallback |
+| `src/components/sections/Contact.tsx` | Client-side form validation; delivery implementation pending issue #3 |
 | `src/lib/config.ts` | Centralized placeholders |
 | `tests/home.spec.ts` | E2E tests |
 | `tests/capture-screenshots.spec.ts` | Viewport screenshots |
