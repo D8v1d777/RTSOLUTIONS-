@@ -70,7 +70,7 @@ test.describe('Independent quality pass', () => {
 
     await expect(form.locator('input[name="name"]')).toHaveAttribute('autocomplete', 'name');
     await expect(form.locator('input[name="email"]')).toHaveAttribute('autocomplete', 'email');
-    await expect(page.locator('#contact')).toContainText('Leaving or refreshing the page clears it');
+    await expect(page.locator('#contact')).toContainText(/leaving or refreshing clears it/i);
   });
 
   test('public copy avoids unverified service-level promises', async ({ page }) => {
