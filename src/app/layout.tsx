@@ -24,7 +24,7 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ['400', '500', '600'],
 });
 
-const siteUrl = config.url || 'https://rtsolutions.dev';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || config.url;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
