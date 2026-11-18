@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Space_Grotesk, DM_Sans, JetBrains_Mono } from 'next/font/google';
+import { Space_Grotesk, DM_Sans, JetBrains_Mono } from 'next/font/google';
+import { config } from '@/lib/config';
 import '@/styles/globals.css';
 
 const spaceGrotesk = Space_Grotesk({
@@ -23,7 +24,10 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ['400', '500', '600'],
 });
 
+const siteUrl = config.url || 'https://rtsolutions.dev';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: 'RTSOLUTIONS — Creative Frontend Studio',
   description: 'An independent software and digital product studio. We build custom websites, web applications, and desktop applications. Our differentiator is creative frontend craft.',
   keywords: ['software studio', 'web development', 'frontend craft', 'web applications', 'desktop applications', 'digital products'],
@@ -34,13 +38,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://rtsolutions.dev',
+    url: siteUrl,
     title: 'RTSOLUTIONS — Creative Frontend Studio',
     description: 'We gather the mess. Find the meaning. Make something that lasts.',
     siteName: 'RTSOLUTIONS',
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/og-image.svg',
         width: 1200,
         height: 630,
         alt: 'RTSOLUTIONS — Creative Frontend Studio',
@@ -51,7 +55,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'RTSOLUTIONS — Creative Frontend Studio',
     description: 'We gather the mess. Find the meaning. Make something that lasts.',
-    images: ['/og-image.jpg'],
+    images: ['/og-image.svg'],
   },
   icons: {
     icon: '/favicon.ico',

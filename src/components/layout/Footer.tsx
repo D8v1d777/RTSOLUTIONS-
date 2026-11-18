@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { GitBranch, Mail, ExternalLink, Send, Link2 } from 'lucide-react';
+import { config } from '@/lib/config';
 
 interface FooterLink {
   label: string;
@@ -7,16 +8,6 @@ interface FooterLink {
   disabled?: boolean;
   external?: boolean;
 }
-
-const config = {
-  email: 'hello@rtsolutions.dev',
-  social: {
-    github: 'https://github.com/rtsolutions',
-    twitter: 'https://twitter.com/rtsolutions',
-    linkedin: 'https://linkedin.com/company/rtsolutions',
-  },
-  isPlaceholder: true,
-};
 
 const footerLinks = {
   studio: [

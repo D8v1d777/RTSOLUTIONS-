@@ -1,7 +1,7 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { useRef, useEffect, useState, useMemo } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import {
   OrbitControls,
   ContactShadows,
@@ -30,10 +30,14 @@ import {
 
 // Check for reduced motion preference
 const useReducedMotion = () => {
-  const [reduced, setReduced] = useState(false);
+  const [reduced, setReduced] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+    return false;
+  });
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReduced(mediaQuery.matches);
     const handler = (e: MediaQueryListEvent) => setReduced(e.matches);
     mediaQuery.addEventListener('change', handler);
     return () => mediaQuery.removeEventListener('change', handler);
@@ -43,31 +47,62 @@ const useReducedMotion = () => {
 
 // Check for WebGL support
 const useWebGLSupport = () => {
-  const [supported, setSupported] = useState(true);
-  useEffect(() => {
-    try {
-      const canvas = document.createElement('canvas');
-      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-      setSupported(!!gl);
-    } catch {
-      setSupported(false);
+  const [supported] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const canvas = document.createElement('canvas');
+        return !!(canvas.getContext('webgl') || canvas.getContext('experimental-webgl'));
+      } catch {
+        return false;
+      }
     }
-  }, []);
+    return true;
+  });
   return supported;
 };
 
 // Jellyfish Bell Component
 function JellyfishBell({
-  time,
   reducedMotion,
   intensity = 1,
 }: {
-  time: number;
   reducedMotion: boolean;
   intensity?: number;
 }) {
   const bellRef = useRef<Mesh>(null);
   const clock = useRef(new Clock()).current;
+
+  // Create geometry once using useMemo
+  const bellGeometry = useMemo(() => {
+    const points: Vector2[] = [];
+    const segments = 32;
+    for (let i = 0; i <= segments; i++) {
+      const v = i / segments;
+      const radius = Math.sin(v * Math.PI * 0.5) * (1 - v * 0.3) + 0.15;
+      const y = Math.cos(v * Math.PI * 0.5) * 1.2;
+      points.push(new Vector2(radius, y));
+    }
+    const geometry = new LatheGeometry(points, 64);
+    geometry.computeVertexNormals();
+    return geometry;
+  }, []);
+
+  // Create material once using useMemo
+  const bellMaterial = useMemo(() => new MeshPhysicalMaterial({
+    color: new Color(0x1a0508),
+    transparent: true,
+    opacity: 0.15,
+    transmission: 0.95,
+    thickness: 0.5,
+    roughness: 0.05,
+    metalness: 0.0,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.05,
+    ior: 1.33,
+    envMapIntensity: 1.5,
+    side: DoubleSide,
+    depthWrite: false,
+  }), []);
 
   useFrame(() => {
     if (!bellRef.current || reducedMotion) return;
@@ -82,58 +117,33 @@ function JellyfishBell({
     bellRef.current.rotation.x = Math.cos(t * 0.2) * 0.05 * intensity;
   });
 
-  // Procedural bell geometry using lathe-like approach
-  const bellGeometry = useRef<LatheGeometry>(null);
-  if (!bellGeometry.current) {
-    const points: Vector2[] = [];
-    const segments = 32;
-    for (let i = 0; i <= segments; i++) {
-      const v = i / segments;
-      const radius = Math.sin(v * Math.PI * 0.5) * (1 - v * 0.3) + 0.15;
-      const y = Math.cos(v * Math.PI * 0.5) * 1.2;
-      points.push(new Vector2(radius, y));
-    }
-    bellGeometry.current = new LatheGeometry(points, 64);
-    bellGeometry.current.computeVertexNormals();
-  }
-
-  const bellMaterial = useRef<MeshPhysicalMaterial>(null);
-  if (!bellMaterial.current) {
-    bellMaterial.current = new MeshPhysicalMaterial({
-      color: new Color(0x1a0508),
-      transparent: true,
-      opacity: 0.15,
-      transmission: 0.95,
-      thickness: 0.5,
-      roughness: 0.05,
-      metalness: 0.0,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.05,
-      ior: 1.33,
-      envMapIntensity: 1.5,
-      side: DoubleSide,
-      depthWrite: false,
-    });
-  }
-
-  return <mesh ref={bellRef} geometry={bellGeometry.current} material={bellMaterial.current} />;
+  return <mesh ref={bellRef} geometry={bellGeometry} material={bellMaterial} />;
 }
 
 // Inner Glow Component
 function InnerGlow({
-  time,
   reducedMotion,
   intensity = 1,
 }: {
-  time: number;
   reducedMotion: boolean;
   intensity?: number;
 }) {
   const glowRef = useRef<Mesh>(null);
+  const clock = useRef(new Clock()).current;
+
+  const glowGeometry = useMemo(() => new SphereGeometry(0.85, 48, 32), []);
+  const glowMaterial = useMemo(() => new MeshPhysicalMaterial({
+    color: new Color(0xff2a3a),
+    transparent: true,
+    opacity: 0.12,
+    blending: AdditiveBlending,
+    depthWrite: false,
+    side: BackSide,
+  }), []);
 
   useFrame(() => {
     if (!glowRef.current || reducedMotion) return;
-    const t = time * 0.5 * intensity;
+    const t = clock.getElapsedTime() * 0.5 * intensity;
 
     const pulse = 1 + Math.sin(t * 0.7) * 0.15 * intensity;
     if (glowRef.current.material instanceof Material) {
@@ -144,47 +154,46 @@ function InnerGlow({
     glowRef.current.scale.setScalar(scale);
   });
 
-  const glowGeometry = useRef<SphereGeometry>(null);
-  if (!glowGeometry.current) {
-    glowGeometry.current = new SphereGeometry(0.85, 48, 32);
-  }
-
-  const glowMaterial = useRef<MeshPhysicalMaterial>(null);
-  if (!glowMaterial.current) {
-    glowMaterial.current = new MeshPhysicalMaterial({
-      color: new Color(0xff2a3a),
-      transparent: true,
-      opacity: 0.12,
-      blending: AdditiveBlending,
-      depthWrite: false,
-      side: BackSide,
-    });
-  }
-
-  return <mesh ref={glowRef} geometry={glowGeometry.current} material={glowMaterial.current} />;
+  return <mesh ref={glowRef} geometry={glowGeometry} material={glowMaterial} />;
 }
 
 // Tentacle Component
 function Tentacle({
   index,
   count,
-  time,
   reducedMotion,
   intensity = 1,
 }: {
   index: number;
   count: number;
-  time: number;
   reducedMotion: boolean;
   intensity?: number;
 }) {
   const tentacleRef = useRef<Group>(null);
+  const clock = useRef(new Clock()).current;
   const phaseOffset = (index / count) * Math.PI * 2;
   const baseAngle = (index / count) * Math.PI * 2;
 
+  const segmentGeometry = useMemo(() => new CapsuleGeometry(0.025, 0.15, 4, 8), []);
+  const segmentMaterial = useMemo(() => new MeshPhysicalMaterial({
+    color: new Color(0x8b151d),
+    transparent: true,
+    opacity: 0.6,
+    transmission: 0.7,
+    thickness: 0.1,
+    roughness: 0.2,
+    metalness: 0.0,
+    clearcoat: 0.8,
+    clearcoatRoughness: 0.1,
+    envMapIntensity: 1.0,
+    depthWrite: false,
+  }), []);
+
+  const segments = 18;
+
   useFrame(() => {
     if (!tentacleRef.current || reducedMotion) return;
-    const t = time * 0.8 * intensity + phaseOffset;
+    const t = clock.getElapsedTime() * 0.8 * intensity + phaseOffset;
 
     const children = tentacleRef.current.children as Object3D[];
     children.forEach((segment, i) => {
@@ -214,57 +223,84 @@ function Tentacle({
     tentacleRef.current.rotation.z = Math.sin(t * 0.3) * 0.1 * intensity;
   });
 
-  const segmentGeometry = useRef<CapsuleGeometry>(null);
-  if (!segmentGeometry.current) {
-    segmentGeometry.current = new CapsuleGeometry(0.025, 0.15, 4, 8);
-  }
-
-  const segmentMaterial = useRef<MeshPhysicalMaterial>(null);
-  if (!segmentMaterial.current) {
-    segmentMaterial.current = new MeshPhysicalMaterial({
-      color: new Color(0x8b151d),
-      transparent: true,
-      opacity: 0.6,
-      transmission: 0.7,
-      thickness: 0.1,
-      roughness: 0.2,
-      metalness: 0.0,
-      clearcoat: 0.8,
-      clearcoatRoughness: 0.1,
-      envMapIntensity: 1.0,
-      depthWrite: false,
-    });
-  }
-
-  const segments = 18;
-  const segmentNodes = [];
-  for (let i = 0; i < segments; i++) {
-    segmentNodes.push(
-      <mesh
-        key={i}
-        geometry={segmentGeometry.current}
-        material={segmentMaterial.current}
-        position={[0, -i * 0.18, 0]}
-        scale={1 - i * 0.035}
-      />
-    );
-  }
+  // Create segment nodes once using useMemo
+  const segmentNodes = useMemo(() => {
+    const nodes = [];
+    for (let i = 0; i < segments; i++) {
+      nodes.push(
+        <mesh
+          key={i}
+          geometry={segmentGeometry}
+          material={segmentMaterial}
+          position={[0, -i * 0.18, 0]}
+          scale={1 - i * 0.035}
+        />
+      );
+    }
+    return nodes;
+  }, [segmentGeometry, segmentMaterial, segments]);
 
   return <group ref={tentacleRef}>{segmentNodes}</group>;
 }
 
+// Pre-generate random values at module level to avoid Math.random during render
+const PARTICLE_COUNT = 300;
+const particleRandomValues = new Array(PARTICLE_COUNT * 6).fill(0).map(() => Math.random());
+// Indices: 0=radius, 1=theta, 2=phi, 3=size/alpha, 4=resetX, 5=resetZ
+
 // Particle System
 function Particles({
-  time,
   reducedMotion,
   intensity = 1,
 }: {
-  time: number;
   reducedMotion: boolean;
   intensity?: number;
 }) {
   const particlesRef = useRef<Points>(null);
-  const count = 300;
+  const clock = useRef(new Clock()).current;
+
+  // Create geometry once with pre-generated random data
+  const geometry = useMemo(() => {
+    const positions = new Float32Array(PARTICLE_COUNT * 3);
+    const sizes = new Float32Array(PARTICLE_COUNT);
+    const alphas = new Float32Array(PARTICLE_COUNT);
+    const colors = new Float32Array(PARTICLE_COUNT * 3);
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const radius = particleRandomValues[i * 4] * 1.2;
+      const theta = particleRandomValues[i * 4 + 1] * Math.PI * 2;
+      const phi = Math.acos(2 * particleRandomValues[i * 4 + 2] - 1);
+
+      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = radius * Math.cos(phi) * 2 - 1.5;
+      positions[i * 3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
+
+      sizes[i] = 0.02 + particleRandomValues[i * 4 + 3] * 0.02;
+      alphas[i] = 0.2 + particleRandomValues[(i * 4 + 3) % (PARTICLE_COUNT * 4)] * 0.4;
+
+      const colorMix = particleRandomValues[(i * 4 + 3) % (PARTICLE_COUNT * 4)];
+      colors[i * 3] = 0.8 + colorMix * 0.2;
+      colors[i * 3 + 1] = 0.05 + colorMix * 0.1;
+      colors[i * 3 + 2] = 0.08 + colorMix * 0.1;
+    }
+
+    const geo = new BufferGeometry();
+    geo.setAttribute('position', new BufferAttribute(positions, 3));
+    geo.setAttribute('size', new BufferAttribute(sizes, 1));
+    geo.setAttribute('alpha', new BufferAttribute(alphas, 1));
+    geo.setAttribute('color', new BufferAttribute(colors, 3));
+    return geo;
+  }, []);
+
+  const material = useMemo(() => new PointsMaterial({
+    size: 0.03,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.6,
+    blending: AdditiveBlending,
+    depthWrite: false,
+    sizeAttenuation: true,
+  }), []);
 
   useFrame(() => {
     if (!particlesRef.current || reducedMotion) return;
@@ -272,10 +308,11 @@ function Particles({
     const positions = geometry.attributes.position.array as Float32Array;
     const sizes = geometry.attributes.size.array as Float32Array;
     const alphas = geometry.attributes.alpha?.array as Float32Array | undefined;
+    const time = clock.getElapsedTime();
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
       const i3 = i * 3;
-      const phase = (i / count) * Math.PI * 8;
+      const phase = (i / PARTICLE_COUNT) * Math.PI * 8;
 
       positions[i3 + 1] += 0.002 * intensity;
       positions[i3] += Math.sin(time * 0.5 + phase) * 0.001 * intensity;
@@ -283,8 +320,10 @@ function Particles({
 
       if (positions[i3 + 1] > 3) {
         positions[i3 + 1] = -1.5;
-        positions[i3] = (Math.random() - 0.5) * 1.5;
-        positions[i3 + 2] = (Math.random() - 0.5) * 1.5;
+        // Use pre-generated random values to avoid Math.random in animation loop
+        const resetIdx = i * 6;
+        positions[i3] = (particleRandomValues[resetIdx + 4] - 0.5) * 1.5;
+        positions[i3 + 2] = (particleRandomValues[resetIdx + 5] - 0.5) * 1.5;
       }
 
       sizes[i] = 0.02 + Math.sin(time * 2 + phase) * 0.01 * intensity;
@@ -298,60 +337,14 @@ function Particles({
     if (alphas) geometry.attributes.alpha.needsUpdate = true;
   });
 
-  const geometry = useRef<BufferGeometry>(null);
-  if (!geometry.current) {
-    const positions = new Float32Array(count * 3);
-    const sizes = new Float32Array(count);
-    const alphas = new Float32Array(count);
-    const colors = new Float32Array(count * 3);
-
-    for (let i = 0; i < count; i++) {
-      const radius = Math.random() * 1.2;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-
-      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = radius * Math.cos(phi) * 2 - 1.5;
-      positions[i * 3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
-
-      sizes[i] = 0.02 + Math.random() * 0.02;
-      alphas[i] = 0.2 + Math.random() * 0.4;
-
-      const colorMix = Math.random();
-      colors[i * 3] = 0.8 + colorMix * 0.2;
-      colors[i * 3 + 1] = 0.05 + colorMix * 0.1;
-      colors[i * 3 + 2] = 0.08 + colorMix * 0.1;
-    }
-
-    const geo = new BufferGeometry();
-    geo.setAttribute('position', new BufferAttribute(positions, 3));
-    geo.setAttribute('size', new BufferAttribute(sizes, 1));
-    geo.setAttribute('alpha', new BufferAttribute(alphas, 1));
-    geo.setAttribute('color', new BufferAttribute(colors, 3));
-    geometry.current = geo;
-  }
-
-  const material = useRef<PointsMaterial>(null);
-  if (!material.current) {
-    material.current = new PointsMaterial({
-      size: 0.03,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.6,
-      blending: AdditiveBlending,
-      depthWrite: false,
-      sizeAttenuation: true,
-    });
-  }
-
-  return <points ref={particlesRef} geometry={geometry.current} material={material.current} />;
+  return <points ref={particlesRef} geometry={geometry} material={material} />;
 }
 
 // Main Jellyfish Scene
 function JellyfishScene() {
   const reducedMotion = useReducedMotion();
   const webglSupported = useWebGLSupport();
-  const clock = useRef(new Clock()).current;
+  // Clock is used by child components via their own useRef(new Clock()).current
 
   const [intensity, setIntensity] = useState(1);
   useEffect(() => {
@@ -373,13 +366,11 @@ function JellyfishScene() {
   return (
     <group>
       <InnerGlow
-        time={clock.getElapsedTime()}
         reducedMotion={reducedMotion}
         intensity={intensity}
       />
 
       <JellyfishBell
-        time={clock.getElapsedTime()}
         reducedMotion={reducedMotion}
         intensity={intensity}
       />
@@ -390,7 +381,6 @@ function JellyfishScene() {
             key={i}
             index={i}
             count={12}
-            time={clock.getElapsedTime()}
             reducedMotion={reducedMotion}
             intensity={intensity}
           />
@@ -403,7 +393,6 @@ function JellyfishScene() {
             key={`oral-${i}`}
             index={i}
             count={8}
-            time={clock.getElapsedTime()}
             reducedMotion={reducedMotion}
             intensity={intensity * 0.5}
           />
@@ -411,7 +400,6 @@ function JellyfishScene() {
       </group>
 
       <Particles
-        time={clock.getElapsedTime()}
         reducedMotion={reducedMotion}
         intensity={intensity}
       />
@@ -464,12 +452,13 @@ export function JellyfishCanvas() {
         <pointLight position={[0, 2, 2]} intensity={0.8} color="#ff2a3a" distance={10} decay={2} />
         <pointLight position={[0, -1, 0]} intensity={0.4} color="#c01c28" distance={5} decay={2} />
 
-        <Environment
+        {/* Environment cubemap removed — no /env/ assets. Procedural lighting suffices. */}
+        {/* <Environment
           background={false}
           files={['px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png']}
           path="/env/"
           preset="studio"
-        />
+        /> */}
 
         <JellyfishScene />
 

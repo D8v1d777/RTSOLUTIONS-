@@ -14,6 +14,8 @@ export function Contact() {
     budget: '',
     timeline: '',
     message: '',
+    // Honeypot field - bots fill this, humans don't see it
+    website: '',
   });
   const [errors, setErrors] = useState<Partial<typeof formData>>({});
 
@@ -24,7 +26,13 @@ export function Contact() {
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Valid email required';
     if (!formData.projectType) newErrors.projectType = 'Select a project type';
     if (!formData.message.trim()) newErrors.message = 'Message is required';
-    else if (formData.message.trim().length < 20) newErrors.message = 'Please share more details (min 20 chars)';
+    else if (formData.message.trim().length < 50) newErrors.message = 'Please share more details (min 50 chars)';
+    // Honeypot check - if filled, likely a bot
+    if (formData.website.trim()) {
+      // Silently reject but don't show error to user
+      setErrors(newErrors);
+      return false;
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -43,7 +51,7 @@ export function Contact() {
     // if (response.ok) setFormState('success'); else setFormState('error');
 
     setFormState('success');
-    setFormData({ name: '', email: '', projectType: '', budget: '', timeline: '', message: '' });
+    setFormData({ name: '', email: '', projectType: '', budget: '', timeline: '', message: '', website: '' });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -189,6 +197,18 @@ export function Contact() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                 >
+                  {/* Honeypot field - hidden from users, filled by bots */}
+                  <input
+                    type="text"
+                    name="website"
+                    id="website"
+                    value={formData.website}
+                    onChange={handleChange}
+                    className="hidden"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                  />
                   <div className="grid sm:grid-cols-2 gap-6">
                     {/* Name */}
                     <div>
@@ -364,7 +384,7 @@ export function Contact() {
                       disabled={formState === 'submitting'}
                     />
                     <p id="message-hint" className="mt-1.5 text-sm text-text-dim">
-                      Minimum 20 characters. Be specific—it helps us prepare for our first conversation.
+                      Minimum 50 characters. Be specific—it helps us prepare for our first conversation.
                     </p>
                     {errors.message && (
                       <p id="message-error" className="mt-1.5 text-sm text-crimson-glow" role="alert">

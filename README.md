@@ -5,7 +5,7 @@ An independent software and digital product studio. We build custom websites, we
 ## Project Status
 
 **Current branch:** `claude/fable-5-2-build`  
-**Latest verification:** 2026-11-17 — Production build passes, TypeScript strict mode clean, Playwright tests pass (15/15 Chromium), screenshots captured at all 4 target viewports.
+**Latest verification:** 2026-11-18 — Production build passes (clean, no warnings), TypeScript strict mode clean, Playwright tests pass (19/19 Chromium), fresh screenshots captured at all 4 target viewports. All P0/P1 audit findings resolved.
 
 ## Quick Start
 
@@ -153,21 +153,23 @@ export const config = {
 
 | Check | Command | Status |
 |-------|---------|--------|
-| Production build | `npm run build` | ✅ Pass |
+| Production build | `npm run build` | ✅ Pass (clean, no warnings) |
 | TypeScript strict | `npm run typecheck` | ✅ Pass |
-| Lint | `npm run lint` | ⚠️ Requires TS 6 (configured) |
-| E2E tests (Chromium) | `npm run test` | ✅ 15/15 Pass |
-| Viewport screenshots | `npx playwright test tests/capture-screenshots.spec.ts` | ✅ 4/4 Captured |
+| Lint | `npx eslint src/ --ext .ts,.tsx --quiet` | ✅ Pass (0 errors) |
+| E2E tests (Chromium) | `npm run test` | ✅ 19/19 Pass |
+| Viewport screenshots | `npx playwright test tests/capture-screenshots.spec.ts` | ✅ 4/4 Captured (fresh) |
 | Lighthouse CI | `npm run lighthouse` | ⏳ Pending |
 
 ## Known Limitations
 
-1. **Lint:** ESLint config uses `eslint-config-next` which requires TypeScript <7. Project uses TS 6.1.3 for compatibility.
+1. **TypeScript version:** Pinned to 6.1.3 for `eslint-config-next` compatibility (TS 7.x unsupported as of 2026-11).
 2. **WebGL fallback:** The 3D jellyfish gracefully degrades to SVG on WebGL failure, but GPU-dependent features (transmission, SSS) are unavailable in fallback.
-3. **Contact form:** Uses `mailto:` fallback; no backend endpoint implemented. Replace with API route when infrastructure exists.
-4. **Social links:** All point to placeholder URLs. Update in `src/lib/config.ts` when accounts are created.
-5. **Environment images:** `@react-three/drei` Environment uses `/env/` cubemap. Add HDR/EXR files for production reflections.
+3. **Contact form:** Uses `mailto:` fallback; no backend endpoint implemented. Replace with API route when infrastructure exists. Honeypot field added for bot protection.
+4. **Social links:** All point to placeholder URLs. Update in `src/lib/config.ts` when accounts are created; flip `isPlaceholder: false`.
+5. **Environment cubemap:** `@react-three/drei` Environment component removed (procedural lighting suffices). Add HDR/EXR cubemap to `public/env/` if reflections desired.
 6. **Playwright on CI:** Firefox/WebKit require system dependencies (`libgtk-4`, etc.). Chromium is the primary CI target.
+7. **Content Security Policy:** Not configured. Recommended for production deployment.
+8. **Reference image:** Visual direction reference not in `docs/reference/`. Add for audit continuity.
 
 ## Deployment
 
