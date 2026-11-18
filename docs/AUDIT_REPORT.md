@@ -3,7 +3,7 @@
 **Date:** 2026-11-18  
 **Auditor:** Independent Principal Frontend Engineer / Creative Director / 3D Web Graphics Specialist / QA Engineer  
 **Branch:** `claude/fable-5-2-build`  
-**Commit:** `2b1c37e` (plus contact system completion)  
+**Commit:** Historical audit snapshot; superseded by the Render preview release note at the top  
 **Repository:** https://github.com/D8v1d777/RTSOLUTIONS-
 
 ---
@@ -190,7 +190,7 @@ Used consistently across cards, form, footer. Backdrop-filter blur(20-24px) with
 | **Placeholder social links** | ⚠️ **Documented limitation** | Social profile URLs are blank and their links are suppressed while `isPlaceholder: true`. |
 | **Contact form limitations** | ⚠️ **Launch blocker** | Client-side validation only; handler simulates success and clears the form without email delivery or backend; honeypot is client-side only |
 
-**Distinction:** Items 2-5 are **documented intentional limitations** (recorded in README, TECHNICAL_DECISIONS, QA_REPORT) — not defects. Only the missing assets (P0) are genuine production blockers.
+**Distinction:** This table is a historical audit snapshot. The superseding release note at the top defines current contact behavior and current launch caveats.
 
 ---
 
@@ -290,7 +290,7 @@ npx playwright test tests/capture-screenshots.spec.ts --project=chromium  # 4/4 
 
 1. **TS 6.1.3 pin** — Required for ESLint compatibility; upgrade when `typescript-eslint` supports TS 7
 2. **Contact form mailto fallback** — No backend; swap to API route when infrastructure exists; honeypot is client-side only (documented)
-3. **Social links placeholders** — Update `src/lib/config.ts` when accounts created; flip `isPlaceholder: false`
+3. **Social links** — Currently blank and suppressed; add only verified profile URLs before enabling
 4. **Environment cubemap** — `Environment` component removed; procedural lighting suffices. Add HDR/EXR cubemap to `public/env/` if reflections desired
 5. **Firefox/WebKit Playwright** — Need system deps (`libgtk-4`, etc.); Chromium primary CI target
 6. **No CSP headers** — Recommended for production deployment
@@ -308,8 +308,8 @@ npx playwright test tests/capture-screenshots.spec.ts --project=chromium  # 4/4 
 - [x] Fresh screenshots at 4 viewports
 - [x] Updated `README.md` if commands/status change
 - [ ] PR #2 updated with results (pending push)
-- [ ] Reference image added to `docs/reference/` (owner action)
+- [x] Reference image tracked at `docs/reference/visual-direction-reference.webp`
 
 ---
 
-**Historical audit findings:** The implementation is visually and structurally strong. See the superseding release note at the top for the current preview and owner-configuration status. The contact form now uses an honest `mailto:` fallback, shows a placeholder warning when config is not verified, removes all fake success states and false privacy claims, and has 12 comprehensive E2E tests. All 31 Playwright tests pass. The site remains a preview candidate until the current commit's verification and owner-specific configuration are complete.
+**Historical audit findings:** The implementation is visually and structurally strong. See the superseding release note at the top for the current preview and owner-configuration status. The current preview hides unverified contact/social details and does not promise a response time or business hours. Historical Playwright results must not be treated as evidence for the current commit.
