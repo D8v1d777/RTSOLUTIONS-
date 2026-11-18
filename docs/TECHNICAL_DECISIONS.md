@@ -418,3 +418,22 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jet
 Next.js 16 removed the `next lint` command. The package script was migrated in commit `0eff927` from `next lint` to `eslint src/ --ext .ts,.tsx`. The audit's direct ESLint CLI invocation reported zero errors and one pre-existing unused-variable warning; the updated `npm run lint` script must be run once in the project environment before merge.
 
 **Official reference:** https://nextjs.org/docs/app/guides/upgrading/version-16
+
+
+---
+
+## 9. Render preview and owner configuration (2026-11-18)
+
+**Decision:** Deploy the active release branch to an isolated Render staging web service.
+
+- Service: `rtsolutions-preview`
+- Region: Singapore
+- Runtime: Node.js 22.23.4
+- Branch: `claude/fable-5-2-build`
+- Build gate: `npm ci && npm run lint && npm run typecheck && npm run build`
+- Auto-deploy: disabled; deploys are manually triggered after reviewed changes.
+- Preview URL: https://rtsolutions-preview.onrender.com
+
+**Contact safety:** Contact email and social profile URLs are intentionally blank until supplied and verified by the owner. Placeholder mode suppresses email and social links. Response-time and business-hours claims are not displayed. The contact form does not transmit or store messages; a mailto draft is only available after a verified recipient is configured.
+
+**Release caveat:** This staging deployment does not imply public-launch approval. Current-commit browser tests and final visual review remain required.
