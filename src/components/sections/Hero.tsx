@@ -52,7 +52,7 @@ export function Hero() {
             <br />
             Find the meaning.
             <br />
-            <span>Make it last.</span>
+            <span>Make something that lasts.</span>
           </motion.h1>
 
           <motion.p
