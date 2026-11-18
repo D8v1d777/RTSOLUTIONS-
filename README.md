@@ -7,6 +7,12 @@ An independent software and digital product studio. We build custom websites, we
 **Current branch:** `claude/fable-5-2-build`  
 **Latest verification:** 2026-11-18 — Production build passes (clean, no warnings), TypeScript strict mode clean, Playwright tests pass (19/19 Chromium), fresh screenshots captured at all 4 target viewports. All P0/P1 audit findings resolved.
 
+## Visual Direction Reference
+
+The original visual reference is committed as [`docs/reference/visual-direction-reference.webp`](./docs/reference/visual-direction-reference.webp). Claude Code should inspect this file directly; no manual image upload is required.
+
+![RTSOLUTIONS visual direction reference](./docs/reference/visual-direction-reference.webp)
+
 ## Quick Start
 
 ```bash
@@ -166,10 +172,10 @@ export const config = {
 2. **WebGL fallback:** The 3D jellyfish gracefully degrades to SVG on WebGL failure, but GPU-dependent features (transmission, SSS) are unavailable in fallback.
 3. **Contact form:** Uses `mailto:` fallback; no backend endpoint implemented. Replace with API route when infrastructure exists. Honeypot field added for bot protection.
 4. **Social links:** All point to placeholder URLs. Update in `src/lib/config.ts` when accounts are created; flip `isPlaceholder: false`.
-5. **Environment cubemap:** `@react-three/drei` Environment component removed (procedural lighting suffices). Add HDR/EXR cubemap to `public/env/` if reflections desired.
+5. **Environment lighting:** The Drei `Environment` component was removed because no cubemap assets were supplied. The scene currently uses procedural lighting; add a tracked HDR/EXR environment only if visual testing demonstrates a clear benefit.
 6. **Playwright on CI:** Firefox/WebKit require system dependencies (`libgtk-4`, etc.). Chromium is the primary CI target.
 7. **Content Security Policy:** Not configured. Recommended for production deployment.
-8. **Reference image:** Visual direction reference not in `docs/reference/`. Add for audit continuity.
+8. **Reference image:** Committed at `docs/reference/visual-direction-reference.webp` and shown above.
 
 ## Deployment
 
