@@ -23,9 +23,9 @@ const footerLinks = {
   ] as FooterLink[],
   connect: [
     { label: 'Start a Project', href: '#contact' },
-    { label: 'Email Us', href: `mailto:${config.email}` },
-    { label: 'GitHub', href: config.social.github, external: true },
-    { label: 'Twitter', href: config.social.twitter, external: true },
+    ...(!config.isPlaceholder && config.contact.verifiedEmail ? [{ label: 'Email Us', href: `mailto:${config.contact.verifiedEmail}` }] : []),
+    ...( !config.isPlaceholder && config.social.github ? [{ label: 'GitHub', href: config.social.github, external: true }] : []),
+    ...( !config.isPlaceholder && config.social.twitter ? [{ label: 'Twitter', href: config.social.twitter, external: true }] : []),
   ] as FooterLink[],
 };
 
@@ -127,43 +127,15 @@ export function Footer() {
               ))}
             </ul>
 
-            {/* Social Icons */}
-            <div className="mt-8 flex items-center gap-4">
-              <a
-                href={config.social.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="text-text-dim hover:text-white transition-colors duration-200"
-              >
-                <GitBranch className="w-5 h-5" />
-              </a>
-              <a
-                href={config.social.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Twitter"
-                className="text-text-dim hover:text-white transition-colors duration-200"
-              >
-                <Send className="w-5 h-5" />
-              </a>
-              <a
-                href={config.social.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="text-text-dim hover:text-white transition-colors duration-200"
-              >
-                <Link2 className="w-5 h-5" />
-              </a>
-              <a
-                href={`mailto:${config.email}`}
-                aria-label="Email"
-                className="text-text-dim hover:text-white transition-colors duration-200"
-              >
-                <Mail className="w-5 h-5" />
-              </a>
-            </div>
+            {/* Verified social and email links only */}
+            {!config.isPlaceholder && (config.social.github || config.social.twitter || config.social.linkedin || config.contact.verifiedEmail) && (
+              <div className="mt-8 flex items-center gap-4">
+                {config.social.github && <a href={config.social.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="text-text-dim hover:text-white transition-colors duration-200"><GitBranch className="w-5 h-5" /></a>}
+                {config.social.twitter && <a href={config.social.twitter} target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="text-text-dim hover:text-white transition-colors duration-200"><Send className="w-5 h-5" /></a>}
+                {config.social.linkedin && <a href={config.social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-text-dim hover:text-white transition-colors duration-200"><Link2 className="w-5 h-5" /></a>}
+                {config.contact.verifiedEmail && <a href={`mailto:${config.contact.verifiedEmail}`} aria-label="Email" className="text-text-dim hover:text-white transition-colors duration-200"><Mail className="w-5 h-5" /></a>}
+              </div>
+            )}
           </nav>
         </div>
 
