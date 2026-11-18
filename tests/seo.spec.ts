@@ -109,6 +109,20 @@ test.describe('Independent quality pass', () => {
     expect(renderedCopy).not.toContain("\\'");
   });
 
+  test('mobile menu toggle is visible only while the mobile navigation is active', async ({ page }) => {
+    await page.goto('/');
+    const toggle = page.locator('button[aria-controls="mobile-menu"]');
+
+    await page.setViewportSize({ width: 767, height: 900 });
+    await expect(toggle).toBeVisible();
+
+    for (const width of [768, 1024, 1440, 1920]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expect(page.locator('.nav-pill')).toBeVisible();
+      await expect(toggle).toBeHidden();
+    }
+  });
+
   test('mobile menu opens, navigates, and closes', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
