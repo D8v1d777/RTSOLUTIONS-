@@ -137,27 +137,27 @@ All placeholder business details are centralized in `src/lib/config.ts`:
 ```typescript
 export const config = {
   email: '',                               // Set only after owner verifies recipient
-  domain: 'rtsolutions.dev',            // Replace with verified domain
+  domain: '',                               // Set only after owner verifies domain
   social: {
-    github: 'https://github.com/rtsolutions',
-    twitter: 'https://twitter.com/rtsolutions',
-    linkedin: 'https://linkedin.com/company/rtsolutions',
+    github: '',
+    twitter: '',
+    linkedin: '',
   },
   isPlaceholder: true,                  // Keep true until all public contact details are verified
 };
 ```
 
-**Do not commit real credentials.** Update `config.ts` and flip `isPlaceholder: false` only after verification.
+**Do not commit secrets.** Supply verified email/social/domain details, then flip `isPlaceholder: false` only after every enabled public link has been checked.
 
 ## Verification Checklist
 
 | Check | Command | Status |
 |-------|---------|--------|
-| Production build | `npm run build` | ✅ Pass (clean, no warnings) |
-| TypeScript strict | `npm run typecheck` | ✅ Pass |
-| Lint | `npx eslint src/ --ext .ts,.tsx --quiet` | ✅ Pass (0 errors) |
+| Production build | `npm run build` | Render build gate; status follows current deploy logs |
+| TypeScript strict | `npm run typecheck` | Render build gate; status follows current deploy logs |
+| Lint | `npm run lint` | Render build gate; status follows current deploy logs |
 | E2E tests (Chromium) | `npm run test` | Historical report: 31/31; rerun required for current preview commit |
-| Viewport screenshots | `npx playwright test tests/capture-screenshots.spec.ts` | ✅ 4/4 Captured (fresh) |
+| Viewport screenshots | `npx playwright test tests/capture-screenshots.spec.ts` | Historical captures; recapture on current preview before merge |
 | Lighthouse CI | `npm run lighthouse` | ⏳ Pending |
 
 ## Known Limitations
