@@ -1,0 +1,61 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+
+# Next.js
+.next/
+out/
+build
+
+# Production
+dist
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env*.local
+.env
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# IDE
+.idea
+.vscode
+
+# Playwright
+test-results/
+playwright-report/
+
+# Turbo
+.turbo
+
+# OS
+Thumbs.db
+
+# Logs
+logs
+*.log
+# Agent orchestration/session artifacts — never commit local state
+.omc/state/
+.omc/notepad.md
+.omc/project-memory.json
+.omc/logs/
+.omc/artifacts/
+.omc/handoffs/
+.omc/ultragoal/

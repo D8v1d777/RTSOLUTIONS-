@@ -5,7 +5,7 @@ You are the lead product designer, creative director, senior frontend engineer, 
 ## Mission
 Build a distinctive, production-quality website for RTSOLUTIONS, an independent startup studio that builds websites, web applications, and desktop applications. Its differentiator is creative frontend craft: taking messy, ambiguous ideas and turning them into coherent, expressive, durable digital products.
 
-The supplied image at `docs/reference/visual-direction-reference.jpg` is the primary visual direction. Preserve its core visual language—near-black canvas, rich crimson/red illumination, translucent luminous jellyfish, editorial typography, glass/metal panels, asymmetric composition, restrained details—while creating an original RTSOLUTIONS design. Do not clone the reference page, its copy, its logo, or its exact component arrangement.
+The supplied image at `docs/reference/visual-direction-reference.webp` is the primary visual direction. Preserve its core visual language—near-black canvas, rich crimson/red illumination, translucent luminous jellyfish, editorial typography, glass/metal panels, asymmetric composition, restrained details—while creating an original RTSOLUTIONS design. Do not clone the reference page, its copy, its logo, or its exact component arrangement. This WebP is committed in the repository; open and inspect it directly before making design decisions. Do not ask the user to paste or upload it.
 
 ## Non-negotiable working rules
 1. Start by auditing the entire repository, current git history, package manifest, source, and the reference image. Do not assume the starter is correct or complete.

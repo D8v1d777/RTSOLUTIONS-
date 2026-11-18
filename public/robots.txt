@@ -1,0 +1,11 @@
+# RTSOLUTIONS robots.txt
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://rtsolutions.dev/sitemap.xml
+
+# Disallow private/admin paths
+Disallow: /api/
+Disallow: /_next/
+Disallow: /private/

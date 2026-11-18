@@ -23,7 +23,7 @@ Founders, small businesses, teams, and organizations with an idea or operational
 - The work should feel authored and intentional
 
 ## Visual reference
-`docs/reference/visual-direction-reference.jpg` is the supplied reference. Carry forward:
+`docs/reference/visual-direction-reference.webp` is committed directly in this repository. Open and inspect this exact file before design work; do not ask the user to paste or upload it. Carry forward:
 - Near-black / black base
 - Deep crimson shadows and scarlet highlights
 - Glowing translucent jellyfish as the signature visual motif
