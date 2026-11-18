@@ -25,7 +25,7 @@ const differentiators = [
     title: 'Thoughtful Engineering',
     description:
       'A clear visual experience still needs a sound foundation. We favour understandable structure, typed code, useful tests, and performance work tied to real user needs.',
-    proof: 'Technical decisions, automated checks, and performance considerations are documented against the project's actual scope.',
+    proof: 'Technical decisions, automated checks, and performance considerations are documented against the agreed project scope.',
   },
   {
     icon: Hammer,
