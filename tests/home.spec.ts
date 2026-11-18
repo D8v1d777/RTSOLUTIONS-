@@ -76,16 +76,15 @@ test.describe('RTSOLUTIONS Homepage', () => {
   test('should have working CTA buttons', async ({ page }) => {
     // Hero CTAs
     await expect(page.locator('a[href="#contact"]:has-text("Start a Project")').first()).toBeVisible();
-    await expect(page.locator('a[href="#work"]:has-text("View Work")')).toBeVisible();
+    await expect(page.locator('a[href="#capabilities"]:has-text("Explore capabilities")')).toBeVisible();
   });
 
-  test('should have jellyfish canvas or fallback', async ({ page }) => {
-    // Either the 3D canvas or fallback should be present
-    // The fallback SVG has classes w-64 h-64 and is inside the hero section
-    const canvas = page.locator('#hero canvas');
-    const fallback = page.locator('#hero [aria-hidden="true"] .w-64.h-64, #hero [aria-hidden="true"] svg.w-64');
-
-    await expect(canvas.or(fallback)).toBeVisible();
+  test('should render the photographic jellyfish centerpiece', async ({ page }) => {
+    const artwork = page.locator('#hero .hero-jelly-photo');
+    await expect(artwork).toBeVisible();
+    const backgroundImage = await artwork.evaluate((element) => getComputedStyle(element).backgroundImage);
+    expect(backgroundImage).toContain('pexels.com');
+    await expect(page.locator('#hero .hero-heading')).toBeVisible();
   });
 
   test('should have footer with links', async ({ page }) => {
