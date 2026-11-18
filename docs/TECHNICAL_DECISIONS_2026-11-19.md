@@ -47,3 +47,22 @@
 **Decision:** Keep only the working “Selected Work” footer link until real case-study destinations exist.
 
 **Reason:** An anchor with `href="#"` is still a navigable link even when marked `aria-disabled`. Omitting unavailable destinations is more truthful and keyboard-safe than presenting dead controls.
+
+
+## 9. Scope the mobile toggle visibility without touching global design tokens
+
+**Decision:** Keep the existing mobile breakpoint, but add a component-scoped CSS Module rule that hides the mobile toggle from 768px upward.
+
+**Reason:** The global `.site-mobile-toggle` rule sets `display: grid` after Tailwind utilities are imported. That rule overrode `md:hidden`, so a second hamburger appeared beside the full navigation at tablet and desktop widths. The higher-specificity CSS Module rule fixes the visibility defect without changing the hero, design tokens, or global composition.
+
+## 10. Close the mobile menu on Escape and restore focus
+
+**Decision:** When the mobile menu is open, Escape closes it and returns focus to the menu trigger.
+
+**Reason:** The menu already supported pointer and link activation, but keyboard users had no direct dismissal key. Focus restoration gives the user a predictable place to continue navigating after the menu closes.
+
+## 11. Remove an unused, unverified social handle
+
+**Decision:** Remove the unused `twitterHandle: '@rtsolutions'` value from the central config.
+
+**Reason:** No verified Twitter/X profile was supplied and the field had no code consumer. Keeping an unverified handle in the shared config could accidentally become public metadata in a later change.

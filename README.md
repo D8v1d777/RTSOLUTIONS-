@@ -9,7 +9,7 @@ An independent software and digital product studio. We build custom websites, we
 **Manual preview services:** [`rtsolutions-preview-live`](https://rtsolutions-preview-live.onrender.com) and [`rtsolutions-preview`](https://rtsolutions-preview.onrender.com) use the same branch but have auto-deploy disabled; both were last inspected at commit `2a001db51e3c4bafd11335adc23d407da8d7c2ed`.  
 **Independent quality PR:** [#4](https://github.com/D8v1d777/RTSOLUTIONS-/pull/4) targets the implementation branch and remains separate from the visual rebuild.  
 **Contact/social:** Public contact and social details are intentionally unpublished until verified. The form has no backend; it creates a mailto draft only after a verified recipient is configured.  
-**Verification:** PR CI run [#45](https://github.com/D8v1d777/RTSOLUTIONS-/actions/runs/44407284465) passed lint, typecheck, production build, and 49 Chromium tests on commit `77305f99109a15997be791c8de3fef7fe2500097`. The next PR check will verify the follow-up changes.
+**Verification:** CI run [#45](https://github.com/D8v1d777/RTSOLUTIONS-/actions/runs/44407284465) passed 49/49 Chromium tests and produced the four reviewed viewport screenshots. Run [#46](https://github.com/D8v1d777/RTSOLUTIONS-/actions/runs/44409796316) passed lint, typecheck, and production build; its one Playwright failure was a stale assertion for the placeholder wording that this branch intentionally replaced. The assertion is corrected in the current head and awaits run #47.
 
 ## Quick Start
 
@@ -85,11 +85,13 @@ tests/
 └── capture-screenshots.spec.ts  # Four viewport screenshot capture
 
 docs/
-├── screenshots/            # Viewport screenshots (4 targets)
+├── screenshots/            # Tracked baseline captures; latest CI evidence is linked above
 ├── BUILD_BRIEF.md          # Product & creative brief
 ├── ACCEPTANCE_CRITERIA.md  # Verifiable acceptance criteria
 ├── CLAUDE_HANDOFF_PROMPT.md
+├── RENDER_PREVIEW.md       # Verified Render service map and release safety
 ├── TECHNICAL_DECISIONS.md  # Key architectural decisions
+├── TECHNICAL_DECISIONS_2026-11-19.md
 ├── QA_REPORT.md            # Historical QA snapshot; see dated report
 └── QA_REPORT_2026-11-19.md # Independent quality pass and evidence
 ```
@@ -160,10 +162,10 @@ export const config = {
 
 | Check | Command | Status |
 |-------|---------|--------|
-| Production build | `npm run build` | Render build gate; status follows current deploy logs |
-| TypeScript strict | `npm run typecheck` | Render build gate; status follows current deploy logs |
-| Lint | `npm run lint` | Render build gate; status follows current deploy logs |
-| E2E tests (Chromium) | `npm run test -- --project=chromium` | CI run #45: 49/49 passed on commit `77305f9`; next PR check covers follow-up edits |
+| Production build | `npm run build` | CI run #46 passed |
+| TypeScript strict | `npm run typecheck` | CI run #46 passed |
+| Lint | `npm run lint` | CI run #46 passed |
+| E2E tests (Chromium) | `npm run test -- --project=chromium` | Run #45: 49/49; run #46: 49/50 because one contact-copy assertion was stale; corrected in current head, run #47 pending |
 | Viewport screenshots | `npm run test -- --project=chromium` | Four captures uploaded in [CI artifact #45](https://github.com/D8v1d777/RTSOLUTIONS-/actions/runs/44407284465) |
 | Lighthouse | `npm run lighthouse` | Not run in this quality pass |
 | axe-core | `@axe-core/playwright` | Not installed or run; no automated axe result claimed |

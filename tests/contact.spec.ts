@@ -263,7 +263,7 @@ test.describe('Contact Form - E2E Tests', () => {
 
   test('placeholder notice visible in info column when config.isPlaceholder is true', async ({ page }) => {
     // Check for placeholder notice in info column - use more specific selector
-    await expect(page.locator('#contact').locator('text=Placeholder contact details — replace with verified info in config').first()).toBeVisible();
+    await expect(page.locator('#contact').locator('text=Contact details are intentionally unpublished until verified.').first()).toBeVisible();
   });
 
   test('placeholder mode never exposes unverified email links or addresses', async ({ page }) => {
