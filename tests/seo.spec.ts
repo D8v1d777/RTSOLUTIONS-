@@ -90,6 +90,10 @@ test.describe('Independent quality pass', () => {
     }
 
     expect(copy).toContain('Varies by scope');
+
+    const whyCopy = await page.locator('#why').innerText();
+    expect(whyCopy).toContain("We're not the right fit for everyone. That's intentional.");
+    expect(whyCopy).not.toContain("\\'");
   });
 
   test('mobile menu opens, navigates, and closes', async ({ page }) => {
