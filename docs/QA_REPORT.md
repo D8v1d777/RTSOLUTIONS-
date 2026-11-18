@@ -3,7 +3,7 @@
 **Date:** 2026-11-18  
 **Branch:** `claude/fable-5-2-build`  
 **Commit:** Preview branch `claude/fable-5-2-build` — current SHA is tracked in the Render deploy record  
-**Environment:** Linux (Node 20), Next.js 16.4.6, React 19, Chromium 1255
+**Environment:** Render Singapore, Node.js 22.23.4, Next.js 16.4.6, React 19; Chromium test environment is separate
 
 ---
 
@@ -11,14 +11,14 @@
 
 | Check | Status | Evidence |
 |-------|--------|----------|
-| Production Build | ✅ Pass | `npm run build` — 0 TypeScript errors, 4 static pages generated, **no metadataBase warning** |
-| TypeScript Strict | ✅ Pass | `npm run typecheck` — 0 errors |
-| Lint | ✅ Pass | `eslint-config-next` with TS 6.1.3 — 0 errors, 1 warning (unused var) |
+| Production Build | ⏳ Current Render deployment | Build log is authoritative for current branch SHA |
+| TypeScript Strict | ⏳ Current Render deployment | Build log is authoritative for current branch SHA |
+| Lint | ⏳ Current Render deployment | Build log is authoritative for current branch SHA |
 | E2E Tests (Chromium) | ⚠️ Historical 31/31 report; rerun on current SHA | Playwright: sections, nav, CTAs, canvas/fallback, footer, form, a11y, responsive + 4 viewport screenshots + 12 contact form tests |
-| Viewport Screenshots | ✅ 4/4 Captured | Fresh captures at 390×844, 768×1024, 1440×900, 1920×1080 |
+| Viewport Screenshots | ⚠️ Historical 4/4 captures | Recapture and inspect on the current deployed SHA |
 | Lighthouse CI | ⏳ Pending | Requires running deployed preview |
 
-**Overall:** Render preview candidate. Contact and social details are deliberately unconfigured and hidden. The current Render build is the authoritative build/typecheck/lint gate; the historical Playwright results below predate the latest placeholder-suppression changes and must not be treated as current-commit verification.
+**Overall:** Render preview candidate. Contact and social details are deliberately unconfigured and hidden. The current Render build is the authoritative build/typecheck/lint gate; Playwright results and screenshot evidence below are historical until rerun against the current SHA.
 
 ---
 
@@ -108,10 +108,10 @@ Exit code: 0
 | no false storage claim in footer text | ✅ Pass | 13.2s | Old claim text absent |
 | no dead privacy link | ✅ Pass | 15.2s | No `a[href="#"]` in contact form |
 | honeypot field exists and is hidden | ✅ Pass | 15.1s | Properly configured with accessibility attrs |
-| mailto body contains all form fields correctly encoded | ✅ Pass | 15.4s | Form data captures correctly |
-| response time and business hours come from config | ✅ Pass | 6.2s | Values from config.contact displayed |
+| mailto URL encoding | ⚠️ Unit coverage updated | Parse and decode the URL in the current unit test; run the suite on this SHA |
+| Unverified response time and business hours hidden | Added current regression assertion | Run the suite on this SHA |
 
-**Total:** 31 passed, 0 failed, 0 flaky
+**Historical total:** 31 passed, 0 failed, 0 flaky on the earlier snapshot. This is not a current-SHA result.
 
 ### Screenshots on Failure
 All tests configured with `screenshot: 'only-on-failure'`, `video: 'retain-on-failure'`. No failures → no artifacts generated.
