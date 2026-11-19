@@ -77,7 +77,7 @@ The first viewport should have a confident editorial composition:
 
 ### 2.3 Below-the-fold composition
 
-Use the reference's variety of scale and surface treatment, but keep RTSSOLUTIONS content truthful:
+Use the reference's variety of scale and surface treatment, but keep RTSOLUTIONS content truthful:
 
 - A manifesto/editorial statement section with strong hierarchy.
 - A two-panel or bento composition to introduce the studio and its working approach.
@@ -371,7 +371,7 @@ Run the phases in order. Each phase produces an artifact/evidence checkpoint. Do
    - Layout: content width, grid, gutter, section spacing, breakpoints, z-index layers.
    - Surfaces: flat, raised, glass, image/media, highlighted CTA. Each has a defined role.
    - Motion: durations, easing tokens, hover policy, entrance choreography, reduced-motion variant.
-5. Map the reference's visible content structure to RTSSOLUTIONS's real content. Document what is reused, reinterpreted, omitted, or replaced for truthfulness.
+5. Map the reference's visible content structure to RTSOLUTIONS's real content. Document what is reused, reinterpreted, omitted, or replaced for truthfulness.
 6. Approve the jellyfish architecture before implementation.
 
 **Gate 1 output:** \`docs/REFERENCE_DESIGN_PLAN.md\` with annotated reference map, agreed design tokens, content map, jellyfish plan, responsive behavior, and accepted tradeoffs.
@@ -394,7 +394,7 @@ Build the signature object before polishing every section. It is the project's l
 
 1. Implement the navigation and hero around the approved visual anchor.
 2. Make the text, CTA, jellyfish, annotations, and information panels form one hierarchy.
-3. Recompose the reference's below-fold structure with original RTSSOLUTIONS content and proof-safe substitutions.
+3. Recompose the reference's below-fold structure with original RTSOLUTIONS content and proof-safe substitutions.
 4. Build the rest of the site with varied layouts rather than repeating one card component.
 5. Polish actual component states:
    - Default, hover, active/pressed, focus-visible, disabled, loading, success/error where applicable.
@@ -522,7 +522,7 @@ Use this as the first instruction after the required skills/plugins are availabl
 >
 > Use Taste as the lead design voice, Impeccable for structured critique/polish, UI UX Pro Max for targeted design-system research, Emil's skills for animation decisions, and Playwright/Chrome DevTools for real evidence. Use REA only if a specific shipped/runtime behavior cannot be understood from the repository and browser inspection.
 >
-> Preserve truthful RTSSOLUTIONS content. Do not copy AgentAI's identity or fabricate its statistics/testimonials/logos. Use subagents for bounded read-only analysis and independent critique; keep one writer responsible for shared UI files. Do not start multiple overlapping design rewrites.
+> Preserve truthful RTSOLUTIONS content. Do not copy AgentAI's identity or fabricate its statistics/testimonials/logos. Use subagents for bounded read-only analysis and independent critique; keep one writer responsible for shared UI files. Do not start multiple overlapping design rewrites.
 >
 > Work on a new feature branch, not \`main\` and not the Render production branch. Iterate with real screenshots, a motion capture, a scored independent critique, and a maximum of six major revision passes. Push a review PR but do not merge or deploy. Report exact SHAs, files, commands, measurements, and evidence. If the result does not meet the scorecard, say so plainly instead of calling it complete.
 
