@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   /* RTSOLUTIONS Color Palette - Black/Crimson cinematic */
@@ -19,23 +19,23 @@
   --color-text-primary: #fafafa;
   --color-text-secondary: #b8b8b8;
   --color-text-muted: #7a7a7a;
-  --color-text-dim: #555555;
+  --color-text-dim: #999999;
 
-  --color-glass-white: rgba(255, 255, 255, 0.03);
-  --color-glass-white-strong: rgba(255, 255, 255, 0.06);
+  --color-glass-white: rgba(255, 255, 255, 0.05);
+  --color-glass-white-strong: rgba(255, 255, 255, 0.10);
   --color-glass-crimson: rgba(192, 28, 40, 0.08);
   --color-glass-crimson-strong: rgba(192, 28, 40, 0.15);
 
   /* Typography - Editorial oversized sans-serif */
-  --font-display: "Space Grotesk", system-ui, sans-serif;
-  --font-body: "DM Sans", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
   /* Fluid type scale */
   --text-xs: clamp(0.7rem, 0.65rem + 0.25vw, 0.8rem);
   --text-sm: clamp(0.8rem, 0.75rem + 0.25vw, 0.9rem);
   --text-base: clamp(0.95rem, 0.9rem + 0.25vw, 1.05rem);
-  --text-lg: clamp(1.1rem, 1.0rem + 0.5vw, 1.25rem);
+  --text-lg: clamp(1.1rem, 1rem + 0.5vw, 1.25rem);
   --text-xl: clamp(1.35rem, 1.2rem + 0.75vw, 1.6rem);
   --text-2xl: clamp(1.75rem, 1.5rem + 1.25vw, 2.25rem);
   --text-3xl: clamp(2.25rem, 1.8rem + 2.25vw, 3.25rem);
@@ -276,12 +276,24 @@ body {
 }
 
 /* Stagger delays */
-.delay-1 { animation-delay: 100ms; }
-.delay-2 { animation-delay: 200ms; }
-.delay-3 { animation-delay: 300ms; }
-.delay-4 { animation-delay: 400ms; }
-.delay-5 { animation-delay: 500ms; }
-.delay-6 { animation-delay: 600ms; }
+.delay-1 {
+  animation-delay: 100ms;
+}
+.delay-2 {
+  animation-delay: 200ms;
+}
+.delay-3 {
+  animation-delay: 300ms;
+}
+.delay-4 {
+  animation-delay: 400ms;
+}
+.delay-5 {
+  animation-delay: 500ms;
+}
+.delay-6 {
+  animation-delay: 600ms;
+}
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
