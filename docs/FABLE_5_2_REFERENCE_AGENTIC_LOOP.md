@@ -2,10 +2,10 @@
 
 **Purpose:** execution brief for Claude Fable 5.2. This document governs the next visual-design and implementation pass. It is not authorization to merge or deploy.
 
-**Primary reference:** \`docs/reference/visual-direction-reference.webp\`  
-**Project brief:** \`docs/BUILD_BRIEF.md\`  
-**Acceptance criteria:** \`docs/ACCEPTANCE_CRITERIA.md\`  
-**Project instructions:** \`CLAUDE.md\`
+**Primary reference:** `docs/reference/visual-direction-reference.webp`  
+**Project brief:** `docs/BUILD_BRIEF.md`  
+**Acceptance criteria:** `docs/ACCEPTANCE_CRITERIA.md`  
+**Project instructions:** `CLAUDE.md`
 
 ---
 
@@ -19,14 +19,14 @@ This is not a request for another generic dark agency landing page. The screensh
 
 ### Rules
 
-1. Read this document, \`CLAUDE.md\`, \`docs/BUILD_BRIEF.md\`, and \`docs/ACCEPTANCE_CRITERIA.md\` before implementation.
+1. Read this document, `CLAUDE.md`, `docs/BUILD_BRIEF.md`, and `docs/ACCEPTANCE_CRITERIA.md` before implementation.
 2. Open the actual reference image at full resolution. Do not work from a remembered or paraphrased description.
 3. Inspect the current branch, latest commit, git status, existing UI, actual deployment configuration, package versions, and existing test evidence before editing. Treat reports and historical screenshots as claims until independently checked against the current revision.
 4. Preserve the existing stack unless a measured technical reason justifies a change. Do not introduce dependencies just to imitate a visual effect.
 5. Keep factual copy and product behavior intact unless the owner approves a change. Do not invent clients, logos, testimonials, staff, locations, metrics, awards, project outcomes, pricing, or contact details.
 6. Never present the reference brand, its copy, its statistics, its testimonial, or its logo as RTSOLUTIONS content. Borrow visual principles, not another company's identity or unverified claims.
 7. Do not use generic AI-design defaults as substitutes for art direction: no random blob gradients, repeated card grids, arbitrary glass cards, excessive pills, emoji icons, meaningless stats, or decorative motion with no purpose.
-8. Work on a new feature branch. Do not commit to \`main\` or the Render production branch. Do not merge, change Render configuration, or trigger a deployment without explicit owner approval.
+8. Work on a new feature branch. Do not commit to `main` or the Render production branch. Do not merge, change Render configuration, or trigger a deployment without explicit owner approval.
 9. No claims of completion based only on a successful build. The actual page must be opened, screenshotted, inspected, and tested.
 10. If the reference image, required browser tooling, or a necessary asset is unavailable, report the blocker precisely. Do not silently substitute a different visual direction.
 
@@ -36,10 +36,10 @@ This is not a request for another generic dark agency landing page. The screensh
 
 The following observations were verified from the repository source during preparation of this brief. Reconfirm them before changing code because the branch may move.
 
-- The reference screenshot is already committed at \`docs/reference/visual-direction-reference.webp\`.
-- \`src/components/sections/Hero.tsx\` currently renders the hero's visual layer with \`hero-jelly-photo\` and \`hero-jelly-glow\` DOM elements.
-- \`Hero.tsx\` does not currently import or mount \`JellyfishCanvas\`.
-- \`src/components/canvas/JellyfishCanvas.tsx\` contains a procedural R3F/Three.js jellyfish implementation, but its existence alone does not mean it appears on the page.
+- The reference screenshot is already committed at `docs/reference/visual-direction-reference.webp`.
+- `src/components/sections/Hero.tsx` currently renders the hero's visual layer with `hero-jelly-photo` and `hero-jelly-glow` DOM elements.
+- `Hero.tsx` does not currently import or mount `JellyfishCanvas`.
+- `src/components/canvas/JellyfishCanvas.tsx` contains a procedural R3F/Three.js jellyfish implementation, but its existence alone does not mean it appears on the page.
 - The current implementation therefore has two different visual routes: a CSS photographic layer in the hero and a procedural 3D component elsewhere in source. Establish which is actually mounted at runtime before making assumptions.
 
 **Required outcome:** one deliberate hero-art pipeline. Do not layer two competing jellyfish implementations accidentally. The chosen hero visual must be the one the browser renders, and the QA screenshots must prove it.
@@ -48,7 +48,7 @@ The following observations were verified from the repository source during prepa
 
 ## 2. Reference deconstruction
 
-Read \`docs/reference/visual-direction-reference.webp\` as a composition, not as a palette swatch.
+Read `docs/reference/visual-direction-reference.webp` as a composition, not as a palette swatch.
 
 ### 2.1 Visual language
 
@@ -153,7 +153,7 @@ A real photographic poster can be used as the initial-loading fallback, but it m
 - Load the 3D scene after the primary content is visible and when it is near the viewport.
 - Reserve layout space to prevent CLS.
 - Cap device pixel ratio and reduce geometry/effects on mobile or low-power devices.
-- Respect \`prefers-reduced-motion\`.
+- Respect `prefers-reduced-motion`.
 - Provide a deterministic fallback for WebGL unavailable/context lost.
 - Avoid remote image dependencies that fail silently. Prefer tracked, licensed, optimized assets.
 - Measure real performance after the visual implementation. Do not dismiss a poor score as an inevitable cost of 3D; investigate LCP, long tasks, JS transfer, texture size, draw calls, frame time, and canvas startup.
@@ -162,53 +162,53 @@ A real photographic poster can be used as the initial-loading fallback, but it m
 
 ## 4. Recommended Claude Code skills and plugins
 
-Install only what is missing. First inspect Claude Code's installed plugins/skills with its plugin UI and \`/skills\`; do not create duplicate copies. Plugin installation changes the agent environment, so show the exact additions to the owner if approval is needed.
+Install only what is missing. First inspect Claude Code's installed plugins/skills with its plugin UI and `/skills`; do not create duplicate copies. Plugin installation changes the agent environment, so show the exact additions to the owner if approval is needed.
 
 ### 4.1 Primary design skills
 
 | Tool | Role in this project | How to use it |
 |---|---|---|
 | **Taste Skill — Leonxlnx** | Primary anti-slop art-direction and website-design driver. Current upstream README identifies v2.5.1, with a browser checker/finish gate, real image sourcing/credits, one design system, and page-by-page planning. | Use as the lead direction skill for the reference-driven redesign. Do not let it replace the supplied visual brief. |
-| **Impeccable — Paul Bakaus** | Design director workflow for shaping, critique, audit, layout, typography, polish, responsive adaptation, hardening, and performance. The inspected upstream skill identifies v4.10.0. | Use its \`shape\`/new-work flow before edits, then targeted \`critique\`, \`audit\`, \`layout\`, \`typeset\`, \`adapt\`, \`polish\`, and \`optimize\` passes. Read its current playbooks and craft-floor before any UI edits. |
+| **Impeccable — Paul Bakaus** | Design director workflow for shaping, critique, audit, layout, typography, polish, responsive adaptation, hardening, and performance. The inspected upstream skill identifies v4.10.0. | Use its `shape`/new-work flow before edits, then targeted `critique`, `audit`, `layout`, `typeset`, `adapt`, `polish`, and `optimize` passes. Read its current playbooks and craft-floor before any UI edits. |
 | **UI UX Pro Max — Next Level Builder** | Searchable design-system and UX reference data. The inspected current skill describes 80 styles, 194 product palettes/reasoning profiles, 74 font pairings, 130 UX guidelines, and 22 technology stacks. | Use once for a tailored design-system baseline, then query only specific concerns (responsive layout, accessibility, typography, interaction). It is a reference database, not an automatic design decision maker. |
-| **Emil Kowalski skills** | Fine-grained animation/design-engineering standards for interaction, motion decisions, animation construction, animation review, and performance. | Load only the relevant skills: \`emil-design-eng\`, \`animate\`, \`review-animations\`, \`improve-animations\`, \`choreograph\`, or \`animation-performance\`. Do not load every skill at once. |
+| **Emil Kowalski skills** | Fine-grained animation/design-engineering standards for interaction, motion decisions, animation construction, animation review, and performance. | Load only the relevant skills: `emil-design-eng`, `animate`, `review-animations`, `improve-animations`, `choreograph`, or `animation-performance`. Do not load every skill at once. |
 
 **Install commands / entry points**
 
 Taste Skill:
-\`\`\`text
+```text
 /plugin marketplace add Leonxlnx/taste-skill
 /plugin install taste-skill@taste-skill
-\`\`\`
+```
 Current upstream skill/installation source: https://github.com/Leonxlnx/taste-skill
 
 Impeccable:
-\`\`\`text
+```text
 /plugin marketplace add pbakaus/impeccable
-\`\`\`
-Then open \`/plugin\` and install Impeccable from the marketplace list. The upstream CLI installer is also documented as:
-\`\`\`bash
+```
+Then open `/plugin` and install Impeccable from the marketplace list. The upstream CLI installer is also documented as:
+```bash
 npx impeccable install
-\`\`\`
+```
 Run the Impeccable setup/init flow once for this project and follow its current hook/trust instructions. Do not install both plugin and CLI copies if that produces duplicate skills or hooks.
 Source: https://github.com/pbakaus/impeccable
 
 UI UX Pro Max:
-\`\`\`text
+```text
 /plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill
 /plugin install ui-ux-pro-max@ui-ux-pro-max-skill
-\`\`\`
+```
 Alternative CLI install:
-\`\`\`bash
+```bash
 npx --yes ui-ux-pro-max-cli init --ai claude
-\`\`\`
+```
 Its search script requires Python 3.x. If Python is missing, ask the owner; do not install system software without approval.
 Source: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
 
 Emil Kowalski skills:
-\`\`\`bash
+```bash
 npx skills@latest add emilkowalski/skills
-\`\`\`
+```
 Upstream skill catalogue and descriptions: https://github.com/emilkowalski/skills
 
 ### 4.2 Official / verification plugins
@@ -230,13 +230,13 @@ Playwright plugin: https://claude.com/plugins/playwright
 Chrome DevTools plugin: https://claude.com/plugins/chrome-devtools-mcp
 
 Chrome DevTools plugin install:
-\`\`\`text
+```text
 /plugin marketplace add ChromeDevTools/chrome-devtools-mcp
 /plugin install chrome-devtools-mcp@chrome-devtools-plugins
-\`\`\`
+```
 Restart Claude Code after installation and confirm the MCP tools are available. Avoid duplicate Chrome DevTools MCP registrations.
 
-Superpowers should be installed from the official Anthropic-managed \`claude-plugins-official\` marketplace entry. Confirm the exact plugin entry in \`/plugin\` before installing; do not guess a similarly named package.
+Superpowers should be installed from the official Anthropic-managed `claude-plugins-official` marketplace entry. Confirm the exact plugin entry in `/plugin` before installing; do not guess a similarly named package.
 
 ### 4.3 REA — Reverse Engineer Anything: optional, not the design engine
 
@@ -246,9 +246,9 @@ For this project, the source repository and exact visual reference already exist
 
 Official source: https://github.com/morluto/rea  
 Setup entry point from its README:
-\`\`\`bash
+```bash
 npx rea-agents setup
-\`\`\`
+```
 The REA setup adds an MCP server and agent workflow configuration; it requires a supported Node.js/npm environment and explicit review of the configuration changes. Do not run setup blindly. The separate Agent Skill route is documented at https://openskills.app/skills/reverse-engineer-anything.
 
 ### 4.4 Skill conflict policy
@@ -287,7 +287,7 @@ Must not edit files.
 
 ### Agent B — Jellyfish / Three.js Specialist (analysis first; implementation only when assigned)
 
-**Task:** inspect the existing \`JellyfishCanvas.tsx\`, geometry, material, animation, and render lifecycle. Determine why the current visual is not delivering the reference silhouette.
+**Task:** inspect the existing `JellyfishCanvas.tsx`, geometry, material, animation, and render lifecycle. Determine why the current visual is not delivering the reference silhouette.
 
 Must deliver:
 - Runtime mount path proving whether the canvas appears in the current Hero.
@@ -353,12 +353,12 @@ Run the phases in order. Each phase produces an artifact/evidence checkpoint. Do
 2. Confirm clean/dirty git state and preserve user changes.
 3. Read the project brief, acceptance criteria, README, technical decisions, and source files.
 4. Inspect the reference image at full size.
-5. Inspect Render service configuration. The currently known production service has been configured to deploy from \`claude/fable-5-2-build\`; re-check before acting. Never push this visual work to that branch while it remains the production auto-deploy branch.
+5. Inspect Render service configuration. The currently known production service has been configured to deploy from `claude/fable-5-2-build`; re-check before acting. Never push this visual work to that branch while it remains the production auto-deploy branch.
 6. Run the existing install, lint, typecheck, build, tests, and baseline screenshots. Record pre-existing failures distinctly from regressions.
 7. Capture actual current page screenshots at 390×844, 768×1024, 1440×900, and 1920×1080. Include a full-page capture and a hero-first-viewport capture.
 8. Open the current deployed site and local build separately. Identify exactly which commit each represents.
 
-**Gate 0 output:** \`docs/qa/baseline.md\` or an equivalent concise artifact with branch/SHA, commands, actual results, screenshot paths, and known blockers.
+**Gate 0 output:** `docs/qa/baseline.md` or an equivalent concise artifact with branch/SHA, commands, actual results, screenshot paths, and known blockers.
 
 ### Phase 1 — Design intelligence and visual direction
 
@@ -374,7 +374,7 @@ Run the phases in order. Each phase produces an artifact/evidence checkpoint. Do
 5. Map the reference's visible content structure to RTSOLUTIONS's real content. Document what is reused, reinterpreted, omitted, or replaced for truthfulness.
 6. Approve the jellyfish architecture before implementation.
 
-**Gate 1 output:** \`docs/REFERENCE_DESIGN_PLAN.md\` with annotated reference map, agreed design tokens, content map, jellyfish plan, responsive behavior, and accepted tradeoffs.
+**Gate 1 output:** `docs/REFERENCE_DESIGN_PLAN.md` with annotated reference map, agreed design tokens, content map, jellyfish plan, responsive behavior, and accepted tradeoffs.
 
 ### Phase 2 — Jellyfish proof-of-concept
 
@@ -498,10 +498,10 @@ Score each category from 0–10, with screenshot/recording evidence. Do not infl
 
 The final PR must contain or link to:
 
-- \`docs/REFERENCE_DESIGN_PLAN.md\` — reference deconstruction, design decisions, content mapping.
-- \`docs/qa/baseline.md\` — baseline commit and checks.
-- \`docs/qa/final-report.md\` — final commands, results, limitations, and scorecard.
-- \`docs/screenshots/\` — final full-page and viewport screenshots actually captured from the final commit.
+- `docs/REFERENCE_DESIGN_PLAN.md` — reference deconstruction, design decisions, content mapping.
+- `docs/qa/baseline.md` — baseline commit and checks.
+- `docs/qa/final-report.md` — final commands, results, limitations, and scorecard.
+- `docs/screenshots/` — final full-page and viewport screenshots actually captured from the final commit.
 - A short motion capture of the jellyfish on desktop and mobile (or a truthful note if the environment cannot record it).
 - Asset provenance/licence notes for any external model, texture, photo, or HDRI.
 - Updated README matching the repository's actual state.
@@ -514,7 +514,7 @@ Never put illustrative/mock screenshots into the evidence folder and label them 
 
 Use this as the first instruction after the required skills/plugins are available:
 
-> You are Fable 5.2 acting as creative director, staff frontend engineer, 3D/web-graphics specialist, and verification lead for RTSOLUTIONS. Read \`docs/FABLE_5_2_REFERENCE_AGENTIC_LOOP.md\`, \`CLAUDE.md\`, \`docs/BUILD_BRIEF.md\`, \`docs/ACCEPTANCE_CRITERIA.md\`, and inspect \`docs/reference/visual-direction-reference.webp\` directly.
+> You are Fable 5.2 acting as creative director, staff frontend engineer, 3D/web-graphics specialist, and verification lead for RTSOLUTIONS. Read `docs/FABLE_5_2_REFERENCE_AGENTIC_LOOP.md`, `CLAUDE.md`, `docs/BUILD_BRIEF.md`, `docs/ACCEPTANCE_CRITERIA.md`, and inspect `docs/reference/visual-direction-reference.webp` directly.
 >
 > Do not edit yet. Run Phase 0. Inspect the current source and prove which jellyfish visual is actually mounted in the running hero. Then produce the reference deconstruction, baseline evidence, plugin/skill availability report, design-system proposal, jellyfish anatomy/geometry proposal, and a ranked discrepancy list.
 >
@@ -524,7 +524,7 @@ Use this as the first instruction after the required skills/plugins are availabl
 >
 > Preserve truthful RTSOLUTIONS content. Do not copy AgentAI's identity or fabricate its statistics/testimonials/logos. Use subagents for bounded read-only analysis and independent critique; keep one writer responsible for shared UI files. Do not start multiple overlapping design rewrites.
 >
-> Work on a new feature branch, not \`main\` and not the Render production branch. Iterate with real screenshots, a motion capture, a scored independent critique, and a maximum of six major revision passes. Push a review PR but do not merge or deploy. Report exact SHAs, files, commands, measurements, and evidence. If the result does not meet the scorecard, say so plainly instead of calling it complete.
+> Work on a new feature branch, not `main` and not the Render production branch. Iterate with real screenshots, a motion capture, a scored independent critique, and a maximum of six major revision passes. Push a review PR but do not merge or deploy. Report exact SHAs, files, commands, measurements, and evidence. If the result does not meet the scorecard, say so plainly instead of calling it complete.
 
 ---
 
