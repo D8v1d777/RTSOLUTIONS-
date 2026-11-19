@@ -1,0 +1,27 @@
+{
+  "name": "RTSOLUTIONS — Creative Frontend Studio",
+  "short_name": "RTSOLUTIONS",
+  "description": "An independent software and digital product studio building custom websites, web applications, and desktop applications.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#c01c28",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "developer", "design"],
+  "lang": "en",
+  "dir": "ltr"
+}
