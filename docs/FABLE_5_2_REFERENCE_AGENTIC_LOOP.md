@@ -37,9 +37,9 @@ This is not a request for another generic dark agency landing page. The screensh
 The following observations were verified from the repository source during preparation of this brief. Reconfirm them before changing code because the branch may move.
 
 - The reference screenshot is already committed at `docs/reference/visual-direction-reference.webp`.
-- `src/components/sections/Hero.tsx` currently renders the hero's visual layer with `hero-jelly-photo` and `hero-jelly-glow` DOM elements.
+- `src/components/sections/Hero.tsx` currently renders the hero's visual layer with `hero-jelly-photo` and `hero-jelly-glow` DOM elements; the stylesheet currently points `hero-jelly-photo` at a remote Pexels image.
 - `Hero.tsx` does not currently import or mount `JellyfishCanvas`.
-- `src/components/canvas/JellyfishCanvas.tsx` contains a procedural R3F/Three.js jellyfish implementation, but its existence alone does not mean it appears on the page.
+- `src/components/canvas/JellyfishCanvas.tsx` contains a procedural R3F/Three.js jellyfish implementation, but its existence alone does not mean it appears on the page. Its inspected source constants define 16 long tentacles and 8 oral arms; judge the silhouette from the rendered browser output, not the constants alone.
 - The current implementation therefore has two different visual routes: a CSS photographic layer in the hero and a procedural 3D component elsewhere in source. Establish which is actually mounted at runtime before making assumptions.
 
 **Required outcome:** one deliberate hero-art pipeline. Do not layer two competing jellyfish implementations accidentally. The chosen hero visual must be the one the browser renders, and the QA screenshots must prove it.
